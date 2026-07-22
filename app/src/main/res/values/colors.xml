@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="bg_main">#FCFBF9</color>
+    <color name="brown_main">#8A4F35</color>
+
+    <color name="text_title">#333333</color>
+    <color name="text_subtitle">#8A8A8A</color>
+    <color name="text_muted">#BDBDBD</color>
+    <color name="text_red">#D32F2F</color>
+
+    <color name="green_trend">#10B981</color>
+    <color name="bg_green_trend">#E6F8F3</color>
+
+    <!-- Màu truy cập nhanh -->
+    <color name="quick_btn_1">#8A4F35</color>
+    <color name="quick_btn_2">#F6E7D8</color>
+    <color name="quick_btn_3">#DEBFA5</color>
+
+    <!-- Màu icon hoạt động -->
+    <color name="bg_icon_orange">#FFD8BA</color>
+    <color name="text_icon_orange">#E67E22</color>
+    <color name="bg_icon_brown">#F2EAE1</color>
+
+    <color name="bg_search">#F3F0EC</color>
+    <color name="bg_circle_icon">#F8EFE7</color>
+    <color name="bg_circle_gray">#EEEEEE</color>
+
+    <color name="orange_stat_bg">#F8B896</color>
+    <color name="tan_stat_bg">#F2E5D8</color>
+    <color name="bg_card_item">#FBF9F7</color>
+    <color name="badge_ongoing">#8A4F35</color>
+    <color name="line_timeline">#E0D6CD</color>
+
+    <color name="bg_chip_gray">#EEEEEE</color>
+    <color name="bg_blog_section">#F6F3EE</color>
+    <color name="bg_suggestion">#FDF2EA</color>
+    <color name="bg_chip_unselected">#F5F3EF</color>
+    <color name="bg_heart">#FFFFFF</color>
+    <color name="bg_input">#F5F3EF</color>
+    <color name="border_input">#E2DDD5</color>
+    <color name="social_btn_bg">#FFFFFF</color>
+    <color name="border_color">#E8E3DC</color>
+    <color name="red_accent">#D9534F</color>
+    <color name="bg_card_light">#FAF8F5</color>
+    <color name="bg_card_revenue">#FFF3E0</color>
+    <color name="bg_badge_pending">#F5EBE6</color>
+    <color name="peach_btn">#FFB085</color>
+</resources>
