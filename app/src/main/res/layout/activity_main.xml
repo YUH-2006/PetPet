@@ -227,9 +227,8 @@
                             android:layout_gravity="center"
                             android:paddingHorizontal="22dp"
                             android:text="Chó"
-                            android:textColor="@color/white"
-                            android:textSize="13sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/text_title"
+                            android:textSize="13sp" />
                     </androidx.cardview.widget.CardView>
 
                     <!-- Chip Unactive: Mèo -->

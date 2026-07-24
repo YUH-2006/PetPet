@@ -1,5 +1,6 @@
 package com.example.petparadise;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +11,9 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
         
-        // Bạn có thể thêm xử lý cho các nút bấm trong Admin tại đây
+        findViewById(R.id.btn_manage_inventory).setOnClickListener(v -> {
+            Intent intent = new Intent(AdminActivity.this, StoreActivity.class);
+            startActivity(intent);
+        });
     }
 }

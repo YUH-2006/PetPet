@@ -45,35 +45,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        // Khởi tạo các nút danh mục
         btnAll = findViewById(R.id.btn_category_all);
         btnDog = findViewById(R.id.btn_category_dog);
         btnCat = findViewById(R.id.btn_category_cat);
         btnFood = findViewById(R.id.btn_category_food);
         btnAccessory = findViewById(R.id.btn_category_accessory);
 
+        categoryButtons.clear();
         categoryButtons.add(btnAll);
         categoryButtons.add(btnDog);
         categoryButtons.add(btnCat);
         categoryButtons.add(btnFood);
         categoryButtons.add(btnAccessory);
 
-        // Khởi tạo các sản phẩm
         itemDogPoodle = findViewById(R.id.item_dog_poodle);
         itemDogPhocSoc = findViewById(R.id.item_dog_phoc_soc);
         itemDogGolden = findViewById(R.id.item_dog_golden);
         itemCatBritish = findViewById(R.id.item_cat_british);
 
-        // Khởi tạo thanh tìm kiếm
         etSearch = findViewById(R.id.et_search);
 
-        // Click events for pet items
         itemDogPoodle.setOnClickListener(v -> openProductDetail("Chó Poodle", "5.000.000 VND", R.drawable.img_poodle));
         itemDogPhocSoc.setOnClickListener(v -> openProductDetail("Chó Phốc Sóc", "4.500.000 VND", R.drawable.img_phoc_soc));
         itemDogGolden.setOnClickListener(v -> openProductDetail("Chó Golden", "6.000.000 VND", R.drawable.img_golden));
         itemCatBritish.setOnClickListener(v -> openProductDetail("Mèo Anh lông ngắn", "3.500.000 VND", R.drawable.img_cat_british));
 
-        // Bottom Navigation
         findViewById(R.id.nav_profile).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
             startActivity(intent);
@@ -114,8 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String keyword = s.toString().toLowerCase().trim();
-                searchProducts(keyword);
+                searchProducts(s.toString().toLowerCase().trim());
             }
 
             @Override
@@ -125,25 +120,19 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateCategoryUI(CardView selectedBtn) {
         for (CardView btn : categoryButtons) {
+            if (btn == null) continue;
             TextView text = (TextView) btn.getChildAt(0);
             if (btn == selectedBtn) {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.brown_main));
                 text.setTextColor(ContextCompat.getColor(this, R.color.white));
-                if (text.getTypeface() != null) {
-                    text.setTypeface(null, android.graphics.Typeface.BOLD);
-                }
             } else {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.bg_chip_unselected));
                 text.setTextColor(ContextCompat.getColor(this, R.color.text_title));
-                text.setTypeface(null, android.graphics.Typeface.NORMAL);
             }
         }
     }
 
     private void filterProducts(String category) {
-        // Reset search bar when switching categories for better UX
-        etSearch.setText("");
-
         itemDogPoodle.setVisibility(View.GONE);
         itemDogPhocSoc.setVisibility(View.GONE);
         itemDogGolden.setVisibility(View.GONE);
@@ -178,17 +167,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        // Hide all first
-        itemDogPoodle.setVisibility(View.GONE);
-        itemDogPhocSoc.setVisibility(View.GONE);
-        itemDogGolden.setVisibility(View.GONE);
-        itemCatBritish.setVisibility(View.GONE);
-
-        // Logic search đơn giản theo tên
-        if ("chó poodle".toLowerCase().contains(keyword)) itemDogPoodle.setVisibility(View.VISIBLE);
-        if ("chó phốc sóc".toLowerCase().contains(keyword)) itemDogPhocSoc.setVisibility(View.VISIBLE);
-        if ("chó golden".toLowerCase().contains(keyword)) itemDogGolden.setVisibility(View.VISIBLE);
-        if ("mèo anh lông ngắn".toLowerCase().contains(keyword)) itemCatBritish.setVisibility(View.VISIBLE);
+        itemDogPoodle.setVisibility("chó poodle".contains(keyword) ? View.VISIBLE : View.GONE);
+        itemDogPhocSoc.setVisibility("chó phốc sóc".contains(keyword) ? View.VISIBLE : View.GONE);
+        itemDogGolden.setVisibility("chó golden".contains(keyword) ? View.VISIBLE : View.GONE);
+        itemCatBritish.setVisibility("mèo anh lông ngắn".contains(keyword) ? View.VISIBLE : View.GONE);
     }
 
     private void openProductDetail(String name, String price, int imageResId) {
