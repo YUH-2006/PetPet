@@ -2,7 +2,10 @@ package com.example.petparadise;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +22,9 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private CardView btnDog, btnCat, btnFood, btnAccessory;
+    private CardView btnAll, btnDog, btnCat, btnFood, btnAccessory;
     private CardView itemDogPoodle, itemDogPhocSoc, itemDogGolden, itemCatBritish;
+    private EditText etSearch;
     private List<CardView> categoryButtons = new ArrayList<>();
 
     @Override
@@ -31,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
         
         initViews();
         setupCategoryButtons();
+        setupSearchBar();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -41,11 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         // Khởi tạo các nút danh mục
+        btnAll = findViewById(R.id.btn_category_all);
         btnDog = findViewById(R.id.btn_category_dog);
         btnCat = findViewById(R.id.btn_category_cat);
         btnFood = findViewById(R.id.btn_category_food);
         btnAccessory = findViewById(R.id.btn_category_accessory);
 
+        categoryButtons.add(btnAll);
         categoryButtons.add(btnDog);
         categoryButtons.add(btnCat);
         categoryButtons.add(btnFood);
@@ -56,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
         itemDogPhocSoc = findViewById(R.id.item_dog_phoc_soc);
         itemDogGolden = findViewById(R.id.item_dog_golden);
         itemCatBritish = findViewById(R.id.item_cat_british);
+
+        // Khởi tạo thanh tìm kiếm
+        etSearch = findViewById(R.id.et_search);
 
         // Click events for pet items
         itemDogPoodle.setOnClickListener(v -> openProductDetail("Chó Poodle", "5.000.000 VND", R.drawable.img_poodle));
@@ -71,6 +81,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupCategoryButtons() {
+        btnAll.setOnClickListener(v -> {
+            updateCategoryUI(btnAll);
+            filterProducts("all");
+        });
+
         btnDog.setOnClickListener(v -> {
             updateCategoryUI(btnDog);
             filterProducts("dog");
@@ -92,27 +107,55 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private void setupSearchBar() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String keyword = s.toString().toLowerCase().trim();
+                searchProducts(keyword);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
     private void updateCategoryUI(CardView selectedBtn) {
         for (CardView btn : categoryButtons) {
             TextView text = (TextView) btn.getChildAt(0);
             if (btn == selectedBtn) {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.brown_main));
                 text.setTextColor(ContextCompat.getColor(this, R.color.white));
+                if (text.getTypeface() != null) {
+                    text.setTypeface(null, android.graphics.Typeface.BOLD);
+                }
             } else {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.bg_chip_unselected));
                 text.setTextColor(ContextCompat.getColor(this, R.color.text_title));
+                text.setTypeface(null, android.graphics.Typeface.NORMAL);
             }
         }
     }
 
     private void filterProducts(String category) {
-        // Mặc định ẩn tất cả
+        // Reset search bar when switching categories for better UX
+        etSearch.setText("");
+
         itemDogPoodle.setVisibility(View.GONE);
         itemDogPhocSoc.setVisibility(View.GONE);
         itemDogGolden.setVisibility(View.GONE);
         itemCatBritish.setVisibility(View.GONE);
 
         switch (category) {
+            case "all":
+                itemDogPoodle.setVisibility(View.VISIBLE);
+                itemDogPhocSoc.setVisibility(View.VISIBLE);
+                itemDogGolden.setVisibility(View.VISIBLE);
+                itemCatBritish.setVisibility(View.VISIBLE);
+                break;
             case "dog":
                 itemDogPoodle.setVisibility(View.VISIBLE);
                 itemDogPhocSoc.setVisibility(View.VISIBLE);
@@ -128,8 +171,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showToast(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    private void searchProducts(String keyword) {
+        if (keyword.isEmpty()) {
+            filterProducts("all");
+            updateCategoryUI(btnAll);
+            return;
+        }
+
+        // Hide all first
+        itemDogPoodle.setVisibility(View.GONE);
+        itemDogPhocSoc.setVisibility(View.GONE);
+        itemDogGolden.setVisibility(View.GONE);
+        itemCatBritish.setVisibility(View.GONE);
+
+        // Logic search đơn giản theo tên
+        if ("chó poodle".toLowerCase().contains(keyword)) itemDogPoodle.setVisibility(View.VISIBLE);
+        if ("chó phốc sóc".toLowerCase().contains(keyword)) itemDogPhocSoc.setVisibility(View.VISIBLE);
+        if ("chó golden".toLowerCase().contains(keyword)) itemDogGolden.setVisibility(View.VISIBLE);
+        if ("mèo anh lông ngắn".toLowerCase().contains(keyword)) itemCatBritish.setVisibility(View.VISIBLE);
     }
 
     private void openProductDetail(String name, String price, int imageResId) {

@@ -87,6 +87,7 @@
                         app:tint="@color/text_muted" />
 
                     <EditText
+                        android:id="@+id/et_search"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_toStartOf="@+id/icon_filter"
@@ -187,7 +188,29 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <!-- Chip Active: Chó -->
+                    <!-- Chip Active: Tất cả -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/btn_category_all"
+                        android:layout_width="wrap_content"
+                        android:layout_height="38dp"
+                        android:layout_marginEnd="8dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        app:cardBackgroundColor="@color/brown_main"
+                        app:cardCornerRadius="19dp"
+                        app:cardElevation="0dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:paddingHorizontal="22dp"
+                            android:text="Tất cả"
+                            android:textColor="@color/white"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Chip Unactive: Chó -->
                     <androidx.cardview.widget.CardView
                         android:id="@+id/btn_category_dog"
                         android:layout_width="wrap_content"
@@ -195,7 +218,7 @@
                         android:layout_marginEnd="8dp"
                         android:clickable="true"
                         android:focusable="true"
-                        app:cardBackgroundColor="@color/brown_main"
+                        app:cardBackgroundColor="@color/bg_chip_unselected"
                         app:cardCornerRadius="19dp"
                         app:cardElevation="0dp">
                         <TextView
