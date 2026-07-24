@@ -35,6 +35,13 @@ public class LoginActivity extends AppCompatActivity {
                 String role = dbHelper.checkUserRole(email, password);
                 
                 if (role != null) {
+                    // Lưu thông tin đăng nhập vào SharedPreferences
+                    getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                            .edit()
+                            .putString("user_email", email)
+                            .putString("user_role", role)
+                            .apply();
+
                     Toast.makeText(this, "Đăng nhập thành công với quyền " + role, Toast.LENGTH_SHORT).show();
                     
                     Intent intent;

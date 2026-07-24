@@ -585,11 +585,14 @@
 
         <!-- Active Tab: Trang chủ -->
         <LinearLayout
+            android:id="@+id/nav_home"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
@@ -606,11 +609,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/nav_cart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
@@ -626,11 +632,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/nav_booking"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
@@ -646,11 +655,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/nav_chat"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"
@@ -666,11 +678,14 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/nav_profile"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clickable="true"
+            android:focusable="true">
             <ImageView
                 android:layout_width="22dp"
                 android:layout_height="22dp"

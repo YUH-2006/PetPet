@@ -82,6 +82,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             role = cursor.getString(0);
             cursor.close();
         }
-        return role; // Trả về "admin", "user" hoặc null nếu sai thông tin
+        return role;
+    }
+
+    // Lấy tên người dùng theo email
+    public String getUserName(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String name = "";
+        Cursor cursor = db.query(TABLE_USERS, new String[]{COLUMN_FULL_NAME}, COLUMN_EMAIL_PHONE + "=?", new String[]{email}, null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            name = cursor.getString(0);
+            cursor.close();
+        }
+        return name;
     }
 }

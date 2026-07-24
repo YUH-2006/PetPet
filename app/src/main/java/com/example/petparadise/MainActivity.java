@@ -1,18 +1,18 @@
 package com.example.petparadise;
 
+import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +56,12 @@ public class MainActivity extends AppCompatActivity {
         itemDogPhocSoc = findViewById(R.id.item_dog_phoc_soc);
         itemDogGolden = findViewById(R.id.item_dog_golden);
         itemCatBritish = findViewById(R.id.item_cat_british);
+
+        // Bottom Navigation
+        findViewById(R.id.nav_profile).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void setupCategoryButtons() {
@@ -94,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void filterProducts(String category) {
-        // Mặc định ẩn tất cả (nếu có food/accessory) hoặc xử lý theo yêu cầu
+        // Mặc định ẩn tất cả
         itemDogPoodle.setVisibility(View.GONE);
         itemDogPhocSoc.setVisibility(View.GONE);
         itemDogGolden.setVisibility(View.GONE);
@@ -120,4 +126,3 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
-
