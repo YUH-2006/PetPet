@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "PetParadise.db";
-    private static final int DATABASE_VERSION = 4; // Nâng cấp version cho bảng products
+    private static final int DATABASE_VERSION = 6; // Nâng lên version 6 để đảm bảo làm mới bảng
 
     // Bảng Users
     public static final String TABLE_USERS = "users";
@@ -31,7 +31,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_PROD_QUANTITY = "quantity";
 
     private static final String USERS_CREATE =
-            "CREATE TABLE " + TABLE_USERS + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_USERS + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_FULL_NAME + " TEXT, " +
                     COLUMN_EMAIL_PHONE + " TEXT UNIQUE, " +
@@ -41,7 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     ");";
 
     private static final String PRODUCTS_CREATE =
-            "CREATE TABLE " + TABLE_PRODUCTS + " (" +
+            "CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCTS + " (" +
                     COLUMN_PROD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_PROD_NAME + " TEXT, " +
                     COLUMN_PROD_CATEGORY + " TEXT, " +
@@ -60,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(USERS_CREATE);
         db.execSQL(PRODUCTS_CREATE);
         addAdmin(db, "Admin PetParadise", "admin@pet.com", "admin123");
+        addDefaultProducts(db);
     }
 
     @Override
@@ -67,8 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_AVATAR + " TEXT");
         }
-        if (oldVersion < 4) {
-            db.execSQL(PRODUCTS_CREATE);
+        db.execSQL(PRODUCTS_CREATE); // Đảm bảo bảng luôn được tạo nếu chưa có
+        if (oldVersion < 6) {
+            addDefaultProducts(db);
         }
     }
 
@@ -79,6 +81,29 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_PASSWORD, password);
         values.put(COLUMN_ROLE, "admin");
         db.insert(TABLE_USERS, null, values);
+    }
+
+    private void addDefaultProducts(SQLiteDatabase db) {
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_PRODUCTS, null);
+        cursor.moveToFirst();
+        if (cursor.getInt(0) == 0) {
+            addProductToDB(db, "Chó Poodle", "Chó", "5.000.000", "", "Bé Poodle thông minh, dễ thương.", 10);
+            addProductToDB(db, "Chó Phốc Sóc", "Chó", "4.500.000", "", "Bé Phốc Sóc trắng như bông.", 8);
+            addProductToDB(db, "Chó Golden", "Chó", "6.000.000", "", "Bé Golden trung thành, năng động.", 5);
+            addProductToDB(db, "Mèo Anh lông ngắn", "Mèo", "3.500.000", "", "Mèo Anh lông ngắn xám cực xinh.", 12);
+        }
+        cursor.close();
+    }
+
+    private void addProductToDB(SQLiteDatabase db, String name, String category, String price, String image, String desc, int quantity) {
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROD_NAME, name);
+        values.put(COLUMN_PROD_CATEGORY, category);
+        values.put(COLUMN_PROD_PRICE, price);
+        values.put(COLUMN_PROD_IMAGE, image);
+        values.put(COLUMN_PROD_DESC, desc);
+        values.put(COLUMN_PROD_QUANTITY, quantity);
+        db.insert(TABLE_PRODUCTS, null, values);
     }
 
     // --- USER METHODS ---
@@ -161,5 +186,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean deleteProduct(int id) {
         SQLiteDatabase db = this.getWritableDatabase();
         return db.delete(TABLE_PRODUCTS, COLUMN_PROD_ID + "=?", new String[]{String.valueOf(id)}) > 0;
+    }
+
+    public boolean updateProduct(int id, String name, String category, String price, String image, String desc, int quantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROD_NAME, name);
+        values.put(COLUMN_PROD_CATEGORY, category);
+        values.put(COLUMN_PROD_PRICE, price);
+        values.put(COLUMN_PROD_IMAGE, image);
+        values.put(COLUMN_PROD_DESC, desc);
+        values.put(COLUMN_PROD_QUANTITY, quantity);
+        return db.update(TABLE_PRODUCTS, values, COLUMN_PROD_ID + "=?", new String[]{String.valueOf(id)}) > 0;
     }
 }

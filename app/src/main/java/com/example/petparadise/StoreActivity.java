@@ -17,7 +17,6 @@ import java.util.List;
 public class StoreActivity extends AppCompatActivity {
 
     private RecyclerView rvInventory;
-    private ProductAdapter adapter;
     private List<Product> productList = new ArrayList<>();
     private DatabaseHelper dbHelper;
     private TextView tvTotal, tvLowStock;
@@ -72,9 +71,7 @@ public class StoreActivity extends AppCompatActivity {
         }
         cursor.close();
 
-        adapter = new ProductAdapter(productList, product -> {
-            showOptionsDialog(product);
-        });
+        ProductAdapter adapter = new ProductAdapter(productList, this::showOptionsDialog);
         rvInventory.setAdapter(adapter);
 
         tvTotal.setText(String.valueOf(productList.size()));
@@ -87,14 +84,26 @@ public class StoreActivity extends AppCompatActivity {
         builder.setTitle(product.getName());
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                // Chỉnh sửa (Tạm thời thông báo, bạn có thể tạo AddProductActivity ở chế độ Edit)
-                Toast.makeText(this, "Tính năng sửa đang được cập nhật", Toast.LENGTH_SHORT).show();
+                // Chỉnh sửa sản phẩm
+                openEditProduct(product);
             } else if (which == 1) {
-                // Xóa
+                // Xóa sản phẩm
                 confirmDelete(product);
             }
         });
         builder.show();
+    }
+
+    private void openEditProduct(Product product) {
+        Intent intent = new Intent(StoreActivity.this, AddProductActivity.class);
+        intent.putExtra("prod_id", product.getId());
+        intent.putExtra("prod_name", product.getName());
+        intent.putExtra("prod_category", product.getCategory());
+        intent.putExtra("prod_price", product.getPrice());
+        intent.putExtra("prod_image", product.getImage());
+        intent.putExtra("prod_desc", product.getDescription());
+        intent.putExtra("prod_qty", product.getQuantity());
+        startActivity(intent);
     }
 
     private void confirmDelete(Product product) {

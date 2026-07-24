@@ -1,6 +1,7 @@
 package com.example.petparadise;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +17,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +26,13 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private CardView btnAll, btnDog, btnCat, btnFood, btnAccessory;
-    private CardView itemDogPoodle, itemDogPhocSoc, itemDogGolden, itemCatBritish;
     private EditText etSearch;
+    private RecyclerView rvProducts;
+    private ProductAdapter adapter;
+    private List<Product> allProducts = new ArrayList<>();
+    private List<Product> displayList = new ArrayList<>();
     private List<CardView> categoryButtons = new ArrayList<>();
+    private DatabaseHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +40,11 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         
+        dbHelper = new DatabaseHelper(this);
         initViews();
         setupCategoryButtons();
         setupSearchBar();
+        loadProductsFromDB();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -51,24 +60,16 @@ public class MainActivity extends AppCompatActivity {
         btnFood = findViewById(R.id.btn_category_food);
         btnAccessory = findViewById(R.id.btn_category_accessory);
 
-        categoryButtons.clear();
         categoryButtons.add(btnAll);
         categoryButtons.add(btnDog);
         categoryButtons.add(btnCat);
         categoryButtons.add(btnFood);
         categoryButtons.add(btnAccessory);
 
-        itemDogPoodle = findViewById(R.id.item_dog_poodle);
-        itemDogPhocSoc = findViewById(R.id.item_dog_phoc_soc);
-        itemDogGolden = findViewById(R.id.item_dog_golden);
-        itemCatBritish = findViewById(R.id.item_cat_british);
+        rvProducts = findViewById(R.id.rv_main_products);
+        rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
 
         etSearch = findViewById(R.id.et_search);
-
-        itemDogPoodle.setOnClickListener(v -> openProductDetail("Chó Poodle", "5.000.000 VND", R.drawable.img_poodle));
-        itemDogPhocSoc.setOnClickListener(v -> openProductDetail("Chó Phốc Sóc", "4.500.000 VND", R.drawable.img_phoc_soc));
-        itemDogGolden.setOnClickListener(v -> openProductDetail("Chó Golden", "6.000.000 VND", R.drawable.img_golden));
-        itemCatBritish.setOnClickListener(v -> openProductDetail("Mèo Anh lông ngắn", "3.500.000 VND", R.drawable.img_cat_british));
 
         findViewById(R.id.nav_profile).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
@@ -76,51 +77,43 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupCategoryButtons() {
-        btnAll.setOnClickListener(v -> {
-            updateCategoryUI(btnAll);
-            filterProducts("all");
+    private void loadProductsFromDB() {
+        allProducts.clear();
+        Cursor cursor = dbHelper.getAllProducts();
+        if (cursor.moveToFirst()) {
+            do {
+                allProducts.add(new Product(
+                    cursor.getInt(0), cursor.getString(1), cursor.getString(2),
+                    cursor.getString(3), cursor.getString(4), cursor.getString(5), cursor.getInt(6)
+                ));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        
+        displayList.clear();
+        displayList.addAll(allProducts);
+        
+        adapter = new ProductAdapter(displayList, product -> {
+            Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+            intent.putExtra("pet_name", product.getName());
+            intent.putExtra("pet_price", product.getPrice());
+            intent.putExtra("pet_image_path", product.getImage()); // Gửi đường dẫn ảnh thật
+            intent.putExtra("pet_description", product.getDescription());
+            startActivity(intent);
         });
-
-        btnDog.setOnClickListener(v -> {
-            updateCategoryUI(btnDog);
-            filterProducts("dog");
-        });
-
-        btnCat.setOnClickListener(v -> {
-            updateCategoryUI(btnCat);
-            filterProducts("cat");
-        });
-
-        btnFood.setOnClickListener(v -> {
-            updateCategoryUI(btnFood);
-            filterProducts("food");
-        });
-
-        btnAccessory.setOnClickListener(v -> {
-            updateCategoryUI(btnAccessory);
-            filterProducts("accessory");
-        });
+        rvProducts.setAdapter(adapter);
     }
 
-    private void setupSearchBar() {
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                searchProducts(s.toString().toLowerCase().trim());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
-        });
+    private void setupCategoryButtons() {
+        btnAll.setOnClickListener(v -> { updateCategoryUI(btnAll); filterProducts("Tất cả"); });
+        btnDog.setOnClickListener(v -> { updateCategoryUI(btnDog); filterProducts("Chó"); });
+        btnCat.setOnClickListener(v -> { updateCategoryUI(btnCat); filterProducts("Mèo"); });
+        btnFood.setOnClickListener(v -> { updateCategoryUI(btnFood); filterProducts("Thức ăn"); });
+        btnAccessory.setOnClickListener(v -> { updateCategoryUI(btnAccessory); filterProducts("Phụ kiện"); });
     }
 
     private void updateCategoryUI(CardView selectedBtn) {
         for (CardView btn : categoryButtons) {
-            if (btn == null) continue;
             TextView text = (TextView) btn.getChildAt(0);
             if (btn == selectedBtn) {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.brown_main));
@@ -133,51 +126,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void filterProducts(String category) {
-        itemDogPoodle.setVisibility(View.GONE);
-        itemDogPhocSoc.setVisibility(View.GONE);
-        itemDogGolden.setVisibility(View.GONE);
-        itemCatBritish.setVisibility(View.GONE);
-
-        switch (category) {
-            case "all":
-                itemDogPoodle.setVisibility(View.VISIBLE);
-                itemDogPhocSoc.setVisibility(View.VISIBLE);
-                itemDogGolden.setVisibility(View.VISIBLE);
-                itemCatBritish.setVisibility(View.VISIBLE);
-                break;
-            case "dog":
-                itemDogPoodle.setVisibility(View.VISIBLE);
-                itemDogPhocSoc.setVisibility(View.VISIBLE);
-                itemDogGolden.setVisibility(View.VISIBLE);
-                break;
-            case "cat":
-                itemCatBritish.setVisibility(View.VISIBLE);
-                break;
-            case "food":
-            case "accessory":
-                Toast.makeText(this, "Danh mục này chưa có sản phẩm", Toast.LENGTH_SHORT).show();
-                break;
+        displayList.clear();
+        if (category.equals("Tất cả")) {
+            displayList.addAll(allProducts);
+        } else {
+            for (Product p : allProducts) {
+                if (p.getCategory().equals(category)) displayList.add(p);
+            }
         }
+        adapter.notifyDataSetChanged();
     }
 
-    private void searchProducts(String keyword) {
-        if (keyword.isEmpty()) {
-            filterProducts("all");
-            updateCategoryUI(btnAll);
-            return;
-        }
-
-        itemDogPoodle.setVisibility("chó poodle".contains(keyword) ? View.VISIBLE : View.GONE);
-        itemDogPhocSoc.setVisibility("chó phốc sóc".contains(keyword) ? View.VISIBLE : View.GONE);
-        itemDogGolden.setVisibility("chó golden".contains(keyword) ? View.VISIBLE : View.GONE);
-        itemCatBritish.setVisibility("mèo anh lông ngắn".contains(keyword) ? View.VISIBLE : View.GONE);
+    private void setupSearchBar() {
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String key = s.toString().toLowerCase().trim();
+                displayList.clear();
+                for (Product p : allProducts) {
+                    if (p.getName().toLowerCase().contains(key)) displayList.add(p);
+                }
+                adapter.notifyDataSetChanged();
+            }
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
     }
 
-    private void openProductDetail(String name, String price, int imageResId) {
-        Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
-        intent.putExtra("pet_name", name);
-        intent.putExtra("pet_price", price);
-        intent.putExtra("pet_image", imageResId);
-        startActivity(intent);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadProductsFromDB(); // Cập nhật lại danh sách nếu có thêm/xóa ở màn hình Admin
     }
 }

@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -25,6 +26,8 @@ public class AddProductActivity extends AppCompatActivity {
     private ImageView ivPreview;
     private DatabaseHelper dbHelper;
     private String savedImagePath = "";
+    
+    private int editingProductId = -1; // -1 có nghĩa là đang thêm mới, khác -1 là đang sửa
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -42,6 +45,13 @@ public class AddProductActivity extends AppCompatActivity {
 
         dbHelper = new DatabaseHelper(this);
         initViews();
+
+        // Kiểm tra xem có dữ liệu sản phẩm truyền vào không (chế độ sửa)
+        Bundle extras = getIntent().getExtras();
+        if (extras != null && extras.containsKey("prod_id")) {
+            editingProductId = extras.getInt("prod_id");
+            setupEditMode(extras);
+        }
 
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
         findViewById(R.id.btn_pick_image).setOnClickListener(v -> mGetContent.launch("image/*"));
@@ -62,6 +72,34 @@ public class AddProductActivity extends AppCompatActivity {
         spinnerCategory.setAdapter(adapter);
     }
 
+    private void setupEditMode(Bundle data) {
+        ((TextView) findViewById(android.R.id.title)).setText("Chỉnh sửa sản phẩm");
+        
+        etName.setText(data.getString("prod_name"));
+        etPrice.setText(data.getString("prod_price").replace(" VND", ""));
+        etQuantity.setText(String.valueOf(data.getInt("prod_qty")));
+        etDesc.setText(data.getString("prod_desc"));
+        
+        savedImagePath = data.getString("prod_image");
+        if (savedImagePath != null && !savedImagePath.isEmpty()) {
+            if (savedImagePath.startsWith("/")) {
+                ivPreview.setImageURI(Uri.fromFile(new File(savedImagePath)));
+            } else {
+                int resId = getResources().getIdentifier(savedImagePath, "drawable", getPackageName());
+                if (resId != 0) ivPreview.setImageResource(resId);
+            }
+            ivPreview.setImageTintList(null);
+        }
+
+        // Chọn đúng category trong Spinner
+        String category = data.getString("prod_category");
+        ArrayAdapter adapter = (ArrayAdapter) spinnerCategory.getAdapter();
+        int position = adapter.getPosition(category);
+        spinnerCategory.setSelection(position);
+
+        ((TextView) findViewById(R.id.btn_save_product)).setText("Cập nhật sản phẩm");
+    }
+
     private void saveProduct() {
         String name = etName.getText().toString().trim();
         String category = spinnerCategory.getSelectedItem().toString();
@@ -74,21 +112,23 @@ public class AddProductActivity extends AppCompatActivity {
             return;
         }
 
-        int quantity = 0;
-        try {
-            quantity = Integer.parseInt(qtyStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Số lượng không hợp lệ", Toast.LENGTH_SHORT).show();
-            return;
-        }
+        int quantity = Integer.parseInt(qtyStr);
         
-        long result = dbHelper.addProduct(name, category, price, savedImagePath, desc, quantity);
+        boolean success;
+        if (editingProductId == -1) {
+            // Thêm mới
+            long result = dbHelper.addProduct(name, category, price, savedImagePath, desc, quantity);
+            success = result != -1;
+        } else {
+            // Cập nhật
+            success = dbHelper.updateProduct(editingProductId, name, category, price, savedImagePath, desc, quantity);
+        }
 
-        if (result != -1) {
-            Toast.makeText(this, "Đã thêm sản phẩm thành công!", Toast.LENGTH_SHORT).show();
+        if (success) {
+            Toast.makeText(this, editingProductId == -1 ? "Thêm thành công!" : "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(this, "Lỗi khi lưu sản phẩm", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Đã có lỗi xảy ra", Toast.LENGTH_SHORT).show();
         }
     }
 

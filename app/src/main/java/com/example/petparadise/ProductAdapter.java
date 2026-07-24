@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.File;
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
@@ -29,7 +30,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_admin, parent, false);
+        // Tự động chọn layout dựa trên Activity đang gọi (Admin thì dùng list, User thì dùng grid)
+        int layoutId = R.layout.item_product_admin;
+        if (parent.getContext() instanceof MainActivity) {
+            layoutId = R.layout.item_product_grid; // Sẽ tạo layout này bên dưới
+        }
+        
+        View view = LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
         return new ViewHolder(view);
     }
 
@@ -38,11 +45,20 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         Product product = productList.get(position);
         holder.tvName.setText(product.getName());
         holder.tvPrice.setText(product.getPrice() + " VND");
-        holder.tvCategory.setText(product.getCategory());
-        holder.tvQty.setText("Số lượng: " + product.getQuantity());
+        
+        if (holder.tvCategory != null) holder.tvCategory.setText(product.getCategory());
+        if (holder.tvQty != null) holder.tvQty.setText("Số lượng: " + product.getQuantity());
 
         if (product.getImage() != null && !product.getImage().isEmpty()) {
-            holder.ivImage.setImageURI(Uri.parse(product.getImage()));
+            if (product.getImage().startsWith("/")) {
+                holder.ivImage.setImageURI(Uri.fromFile(new File(product.getImage())));
+            } else {
+                // Ảnh mẫu mặc định (nếu là resource name)
+                int resId = holder.itemView.getContext().getResources().getIdentifier(
+                        product.getImage(), "drawable", holder.itemView.getContext().getPackageName());
+                if (resId != 0) holder.ivImage.setImageResource(resId);
+                else holder.ivImage.setImageResource(R.drawable.ic_launcher_background);
+            }
         } else {
             holder.ivImage.setImageResource(R.drawable.ic_launcher_background);
         }
