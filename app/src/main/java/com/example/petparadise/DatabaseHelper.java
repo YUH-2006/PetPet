@@ -96,4 +96,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         return name;
     }
+
+    // Cập nhật tên người dùng
+    public boolean updateUserName(String email, String newName) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_FULL_NAME, newName);
+
+        int result = db.update(TABLE_USERS, values, COLUMN_EMAIL_PHONE + "=?", new String[]{email});
+        return result > 0;
+    }
 }

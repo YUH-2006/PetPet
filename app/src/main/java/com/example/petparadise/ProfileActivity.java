@@ -27,6 +27,35 @@ public class ProfileActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btn_logout);
         btnAdminMode = findViewById(R.id.btn_admin_mode);
 
+        findViewById(R.id.btn_back).setOnClickListener(v -> finish());
+
+        // Chỉnh sửa thông tin
+        findViewById(R.id.menu_edit_profile).setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
+            startActivity(intent);
+        });
+
+        // Xử lý Đăng xuất
+        btnLogout.setOnClickListener(v -> {
+            // Xóa thông tin đăng nhập
+            getSharedPreferences("UserPrefs", MODE_PRIVATE).edit().clear().apply();
+            
+            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
+            
+            // Quay về màn hình Login
+            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadUserData();
+    }
+
+    private void loadUserData() {
         // Lấy thông tin từ SharedPreferences
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         String email = prefs.getString("user_email", "");
@@ -41,7 +70,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         // Ẩn/Hiện nút Admin mode dựa trên Role
-        if (role.equals("admin")) {
+        if (role != null && role.equals("admin")) {
             btnAdminMode.setVisibility(View.VISIBLE);
             btnAdminMode.setOnClickListener(v -> {
                 Intent intent = new Intent(ProfileActivity.this, AdminActivity.class);
@@ -50,18 +79,5 @@ public class ProfileActivity extends AppCompatActivity {
         } else {
             btnAdminMode.setVisibility(View.GONE);
         }
-
-        // Xử lý Đăng xuất
-        btnLogout.setOnClickListener(v -> {
-            // Xóa thông tin đăng nhập
-            getSharedPreferences("UserPrefs", MODE_PRIVATE).edit().clear().apply();
-            
-            Toast.makeText(this, "Đã đăng xuất", Toast.LENGTH_SHORT).show();
-            
-            // Quay về màn hình Login
-            Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        });
     }
 }
