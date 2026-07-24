@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.button.MaterialButton;
 
 public class ProfileActivity extends AppCompatActivity {
@@ -16,6 +18,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView tvName, tvEmail, btnAdminMode;
     private ImageView ivAvatar;
     private MaterialButton btnLogout;
+    private SwitchCompat switchDarkMode;
     private DatabaseHelper dbHelper;
 
     @Override
@@ -30,6 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
         ivAvatar = findViewById(R.id.iv_profile_avatar);
         btnLogout = findViewById(R.id.btn_logout);
         btnAdminMode = findViewById(R.id.btn_admin_mode);
+        switchDarkMode = findViewById(R.id.switch_dark_mode);
 
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
@@ -39,20 +43,18 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Thiết lập trạng thái ban đầu của Switch
+        SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean isDarkMode = settings.getBoolean("dark_mode", false);
+        switchDarkMode.setChecked(isDarkMode);
+
         // Chế độ Sáng/Tối
         findViewById(R.id.menu_app_settings).setOnClickListener(v -> {
-            SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
-            boolean isDarkMode = settings.getBoolean("dark_mode", false);
+            boolean currentMode = switchDarkMode.isChecked();
+            boolean newMode = !currentMode;
             
-            if (isDarkMode) {
-                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
-                settings.edit().putBoolean("dark_mode", false).apply();
-                Toast.makeText(this, "Chuyển sang chế độ Sáng", Toast.LENGTH_SHORT).show();
-            } else {
-                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
-                settings.edit().putBoolean("dark_mode", true).apply();
-                Toast.makeText(this, "Chuyển sang chế độ Tối", Toast.LENGTH_SHORT).show();
-            }
+            switchDarkMode.setChecked(newMode);
+            applyTheme(newMode);
         });
 
         // Xử lý Đăng xuất
@@ -63,6 +65,19 @@ public class ProfileActivity extends AppCompatActivity {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
+    }
+
+    private void applyTheme(boolean isDarkMode) {
+        SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        settings.edit().putBoolean("dark_mode", isDarkMode).apply();
+
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+            Toast.makeText(this, "Đã bật chế độ Tối", Toast.LENGTH_SHORT).show();
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            Toast.makeText(this, "Đã bật chế độ Sáng", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -83,7 +98,6 @@ public class ProfileActivity extends AppCompatActivity {
             String avatarPath = dbHelper.getUserAvatar(email);
             if (!avatarPath.isEmpty()) {
                 ivAvatar.setImageURI(Uri.parse(avatarPath));
-                // Xóa Tint nếu có ảnh thật
                 ivAvatar.setImageTintList(null);
             }
         }

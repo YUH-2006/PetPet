@@ -1,11 +1,13 @@
 package com.example.petparadise;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 
 public class LoginActivity extends AppCompatActivity {
@@ -15,6 +17,9 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Áp dụng giao diện đã lưu ngay khi khởi động
+        applySavedTheme();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -52,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
                         // Nếu là user, chuyển sang MainActivity
                         intent = new Intent(LoginActivity.this, MainActivity.class);
                     }
-
+                    
                     startActivity(intent);
                     finish();
                 } else {
@@ -65,5 +70,15 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
         });
+    }
+
+    private void applySavedTheme() {
+        SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
+        boolean isDarkMode = settings.getBoolean("dark_mode", false);
+        if (isDarkMode) {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
     }
 }
