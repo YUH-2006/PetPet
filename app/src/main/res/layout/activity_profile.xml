@@ -48,6 +48,7 @@
                 app:cardCornerRadius="40dp"
                 app:cardElevation="0dp">
                 <ImageView
+                    android:id="@+id/iv_profile_avatar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
@@ -131,11 +132,15 @@
                     android:textColor="@color/text_title" />
 
                 <TextView
+                    android:id="@+id/menu_app_settings"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
-                    android:text="Cài đặt ứng dụng"
-                    android:textColor="@color/text_title" />
+                    android:text="Cài đặt ứng dụng (Giao diện)"
+                    android:textColor="@color/text_title"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
             </LinearLayout>
 
             <!-- Nút Đăng xuất -->
