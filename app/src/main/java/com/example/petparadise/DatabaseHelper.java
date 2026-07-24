@@ -87,10 +87,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM " + TABLE_PRODUCTS, null);
         cursor.moveToFirst();
         if (cursor.getInt(0) == 0) {
-            addProductToDB(db, "Chó Poodle", "Chó", "5.000.000", "", "Bé Poodle thông minh, dễ thương.", 10);
-            addProductToDB(db, "Chó Phốc Sóc", "Chó", "4.500.000", "", "Bé Phốc Sóc trắng như bông.", 8);
-            addProductToDB(db, "Chó Golden", "Chó", "6.000.000", "", "Bé Golden trung thành, năng động.", 5);
-            addProductToDB(db, "Mèo Anh lông ngắn", "Mèo", "3.500.000", "", "Mèo Anh lông ngắn xám cực xinh.", 12);
+            addProductToDB(db, "Chó Poodle", "Chó", "5.000.000", "img_poodle", "Bé Poodle thông minh, dễ thương.", 10);
+            addProductToDB(db, "Chó Phốc Sóc", "Chó", "4.500.000", "img_phoc_soc", "Bé Phốc Sóc trắng như bông.", 8);
+            addProductToDB(db, "Chó Golden", "Chó", "6.000.000", "img_golden", "Bé Golden trung thành, năng động.", 5);
+            addProductToDB(db, "Mèo Anh lông ngắn", "Mèo", "3.500.000", "img_cat_british", "Mèo Anh lông ngắn xám cực xinh.", 12);
         }
         cursor.close();
     }

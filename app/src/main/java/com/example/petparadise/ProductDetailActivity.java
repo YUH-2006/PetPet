@@ -1,10 +1,12 @@
 package com.example.petparadise;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import java.io.File;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
@@ -44,13 +46,25 @@ public class ProductDetailActivity extends AppCompatActivity {
         if (extras != null) {
             String name = extras.getString("pet_name", "Thú cưng");
             String price = extras.getString("pet_price", "Liên hệ");
-            int imageResId = extras.getInt("pet_image", R.drawable.img_golden);
+            String imagePath = extras.getString("pet_image_path", "");
             String description = extras.getString("pet_description", "");
 
             tvPetName.setText(name);
-            tvPetPrice.setText(price);
-            imgPet.setImageResource(imageResId);
-            if (!description.isEmpty()) {
+            tvPetPrice.setText(price + " VND");
+            
+            if (imagePath != null && !imagePath.isEmpty()) {
+                if (imagePath.startsWith("/")) {
+                    imgPet.setImageURI(Uri.fromFile(new File(imagePath)));
+                } else {
+                    int resId = getResources().getIdentifier(imagePath, "drawable", getPackageName());
+                    if (resId != 0) imgPet.setImageResource(resId);
+                    else imgPet.setImageResource(R.drawable.ic_launcher_background);
+                }
+            } else {
+                imgPet.setImageResource(R.drawable.ic_launcher_background);
+            }
+
+            if (description != null && !description.isEmpty()) {
                 tvPetDescription.setText(description);
             }
         }

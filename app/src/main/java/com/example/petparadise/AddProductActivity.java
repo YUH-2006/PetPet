@@ -15,6 +15,8 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.button.MaterialButton;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -24,10 +26,12 @@ public class AddProductActivity extends AppCompatActivity {
     private EditText etName, etPrice, etQuantity, etDesc;
     private Spinner spinnerCategory;
     private ImageView ivPreview;
+    private TextView tvTitle;
+    private MaterialButton btnSave;
     private DatabaseHelper dbHelper;
     private String savedImagePath = "";
     
-    private int editingProductId = -1; // -1 có nghĩa là đang thêm mới, khác -1 là đang sửa
+    private int editingProductId = -1;
 
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
@@ -46,7 +50,6 @@ public class AddProductActivity extends AppCompatActivity {
         dbHelper = new DatabaseHelper(this);
         initViews();
 
-        // Kiểm tra xem có dữ liệu sản phẩm truyền vào không (chế độ sửa)
         Bundle extras = getIntent().getExtras();
         if (extras != null && extras.containsKey("prod_id")) {
             editingProductId = extras.getInt("prod_id");
@@ -56,7 +59,7 @@ public class AddProductActivity extends AppCompatActivity {
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
         findViewById(R.id.btn_pick_image).setOnClickListener(v -> mGetContent.launch("image/*"));
 
-        findViewById(R.id.btn_save_product).setOnClickListener(v -> saveProduct());
+        btnSave.setOnClickListener(v -> saveProduct());
     }
 
     private void initViews() {
@@ -66,6 +69,8 @@ public class AddProductActivity extends AppCompatActivity {
         etDesc = findViewById(R.id.et_prod_desc);
         spinnerCategory = findViewById(R.id.spinner_category);
         ivPreview = findViewById(R.id.iv_product_preview);
+        tvTitle = findViewById(R.id.tv_add_prod_title);
+        btnSave = findViewById(R.id.btn_save_product);
 
         String[] categories = {"Chó", "Mèo", "Thức ăn", "Phụ kiện"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, categories);
@@ -73,10 +78,15 @@ public class AddProductActivity extends AppCompatActivity {
     }
 
     private void setupEditMode(Bundle data) {
-        ((TextView) findViewById(android.R.id.title)).setText("Chỉnh sửa sản phẩm");
+        tvTitle.setText("Chỉnh sửa sản phẩm");
         
         etName.setText(data.getString("prod_name"));
-        etPrice.setText(data.getString("prod_price").replace(" VND", ""));
+        // Đảm bảo lấy đúng giá dạng số
+        String price = data.getString("prod_price");
+        if (price != null) {
+            etPrice.setText(price.replace(" VND", "").replace(".", "").replace(",", ""));
+        }
+        
         etQuantity.setText(String.valueOf(data.getInt("prod_qty")));
         etDesc.setText(data.getString("prod_desc"));
         
@@ -91,13 +101,14 @@ public class AddProductActivity extends AppCompatActivity {
             ivPreview.setImageTintList(null);
         }
 
-        // Chọn đúng category trong Spinner
         String category = data.getString("prod_category");
-        ArrayAdapter adapter = (ArrayAdapter) spinnerCategory.getAdapter();
-        int position = adapter.getPosition(category);
-        spinnerCategory.setSelection(position);
+        if (category != null) {
+            ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinnerCategory.getAdapter();
+            int position = adapter.getPosition(category);
+            spinnerCategory.setSelection(position);
+        }
 
-        ((TextView) findViewById(R.id.btn_save_product)).setText("Cập nhật sản phẩm");
+        btnSave.setText("Cập nhật sản phẩm");
     }
 
     private void saveProduct() {
@@ -108,27 +119,30 @@ public class AddProductActivity extends AppCompatActivity {
         String desc = etDesc.getText().toString().trim();
 
         if (name.isEmpty() || price.isEmpty() || qtyStr.isEmpty()) {
-            Toast.makeText(this, "Vui lòng nhập đầy đủ các thông tin bắt buộc", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vui lòng nhập đầy đủ các thông tin", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int quantity = Integer.parseInt(qtyStr);
+        int quantity;
+        try {
+            quantity = Integer.parseInt(qtyStr);
+        } catch (Exception e) {
+            quantity = 0;
+        }
         
         boolean success;
         if (editingProductId == -1) {
-            // Thêm mới
             long result = dbHelper.addProduct(name, category, price, savedImagePath, desc, quantity);
             success = result != -1;
         } else {
-            // Cập nhật
             success = dbHelper.updateProduct(editingProductId, name, category, price, savedImagePath, desc, quantity);
         }
 
         if (success) {
-            Toast.makeText(this, editingProductId == -1 ? "Thêm thành công!" : "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Thành công!", Toast.LENGTH_SHORT).show();
             finish();
         } else {
-            Toast.makeText(this, "Đã có lỗi xảy ra", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Lỗi khi lưu dữ liệu", Toast.LENGTH_SHORT).show();
         }
     }
 
