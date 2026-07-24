@@ -57,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
         itemDogGolden = findViewById(R.id.item_dog_golden);
         itemCatBritish = findViewById(R.id.item_cat_british);
 
+        // Click events for pet items
+        itemDogPoodle.setOnClickListener(v -> openProductDetail("Chó Poodle", "5.000.000 VND", R.drawable.img_poodle));
+        itemDogPhocSoc.setOnClickListener(v -> openProductDetail("Chó Phốc Sóc", "4.500.000 VND", R.drawable.img_phoc_soc));
+        itemDogGolden.setOnClickListener(v -> openProductDetail("Chó Golden", "6.000.000 VND", R.drawable.img_golden));
+        itemCatBritish.setOnClickListener(v -> openProductDetail("Mèo Anh lông ngắn", "3.500.000 VND", R.drawable.img_cat_british));
+
         // Bottom Navigation
         findViewById(R.id.nav_profile).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
@@ -124,5 +130,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void openProductDetail(String name, String price, int imageResId) {
+        Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+        intent.putExtra("pet_name", name);
+        intent.putExtra("pet_price", price);
+        intent.putExtra("pet_image", imageResId);
+        startActivity(intent);
     }
 }

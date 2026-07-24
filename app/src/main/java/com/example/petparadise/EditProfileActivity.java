@@ -1,7 +1,8 @@
 package com.example.petparadise;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -13,6 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+
 public class EditProfileActivity extends AppCompatActivity {
 
     private EditText etName;
@@ -21,15 +26,14 @@ public class EditProfileActivity extends AppCompatActivity {
     private MaterialButton btnSave;
     private DatabaseHelper dbHelper;
     private String currentEmail;
-    private String selectedAvatarUri = "";
+    private String savedAvatarPath = "";
 
+    // Bộ chọn ảnh từ thư viện
     private final ActivityResultLauncher<String> mGetContent = registerForActivityResult(
             new ActivityResultContracts.GetContent(),
             uri -> {
                 if (uri != null) {
-                    selectedAvatarUri = uri.toString();
-                    ivAvatar.setImageURI(uri);
-                    // Lưu ý: Trong thực tế, bạn nên copy ảnh vào thư mục app để tránh mất quyền truy cập URI sau này
+                    processSelectedImage(uri);
                 }
             }
     );
@@ -47,7 +51,6 @@ public class EditProfileActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
-        // Lấy thông tin hiện tại
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         currentEmail = prefs.getString("user_email", "");
 
@@ -56,13 +59,13 @@ public class EditProfileActivity extends AppCompatActivity {
             etName.setText(dbHelper.getUserName(currentEmail));
             
             String avatarPath = dbHelper.getUserAvatar(currentEmail);
-            if (!avatarPath.isEmpty()) {
+            if (avatarPath != null && !avatarPath.isEmpty()) {
                 ivAvatar.setImageURI(Uri.parse(avatarPath));
-                selectedAvatarUri = avatarPath;
+                savedAvatarPath = avatarPath;
             }
         }
 
-        // Click để đổi ảnh
+        // Click vào khu vực Avatar để chọn ảnh
         findViewById(R.id.btn_change_avatar).setOnClickListener(v -> {
             mGetContent.launch("image/*");
         });
@@ -72,16 +75,38 @@ public class EditProfileActivity extends AppCompatActivity {
             if (newName.isEmpty()) {
                 Toast.makeText(this, "Họ tên không được để trống", Toast.LENGTH_SHORT).show();
             } else {
-                boolean isUpdatedName = dbHelper.updateUserName(currentEmail, newName);
-                boolean isUpdatedAvatar = dbHelper.updateUserAvatar(currentEmail, selectedAvatarUri);
-                
-                if (isUpdatedName || isUpdatedAvatar) {
-                    Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
-                    finish();
-                } else {
-                    Toast.makeText(this, "Lỗi khi cập nhật", Toast.LENGTH_SHORT).show();
-                }
+                dbHelper.updateUserName(currentEmail, newName);
+                dbHelper.updateUserAvatar(currentEmail, savedAvatarPath);
+                Toast.makeText(this, "Cập nhật thành công!", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
+    }
+
+    // Hàm xử lý và copy ảnh vào bộ nhớ app
+    private void processSelectedImage(Uri uri) {
+        try {
+            // Tạo tên file duy nhất cho user
+            String fileName = "avatar_" + System.currentTimeMillis() + ".jpg";
+            File file = new File(getFilesDir(), fileName);
+
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+            
+            FileOutputStream outputStream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
+            
+            outputStream.close();
+            inputStream.close();
+
+            // Lưu đường dẫn file cục bộ
+            savedAvatarPath = file.getAbsolutePath();
+            ivAvatar.setImageBitmap(bitmap);
+            ivAvatar.setImageTintList(null); // Xóa màu đè nếu có
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Không thể chọn ảnh này", Toast.LENGTH_SHORT).show();
+        }
     }
 }

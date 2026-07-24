@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#121212</color> <!-- Trắng chuyển thành Đen -->
+    <color name="bg_main">#121212</color> <!-- Nền chính chuyển thành Đen -->
+    <color name="bg_search">#1E1E1E</color>
+    <color name="bg_chip_unselected">#2C2C2C</color>
+    <color name="text_title">#E1E1E1</color> <!-- Chữ tiêu đề chuyển sang Trắng sáng -->
+    <color name="text_subtitle">#B0B0B0</color>
+    <color name="text_muted">#888888</color>
+    <color name="border_input">#333333</color>
+    <color name="bg_input">#1E1E1E</color>
+</resources>

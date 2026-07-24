@@ -17,8 +17,11 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Áp dụng giao diện đã lưu ngay khi khởi động
-        applySavedTheme();
+        // Cấu hình chế độ sáng tối cho TOÀN BỘ ứng dụng dựa trên cài đặt đã lưu
+        applySavedThemeGlobal();
+        
+        // NHƯNG ép riêng màn hình Login này luôn ở chế độ SÁNG (Light Mode)
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
@@ -40,21 +43,18 @@ public class LoginActivity extends AppCompatActivity {
                 String role = dbHelper.checkUserRole(email, password);
                 
                 if (role != null) {
-                    // Lưu thông tin đăng nhập vào SharedPreferences
                     getSharedPreferences("UserPrefs", MODE_PRIVATE)
                             .edit()
                             .putString("user_email", email)
                             .putString("user_role", role)
                             .apply();
 
-                    Toast.makeText(this, "Đăng nhập thành công với quyền " + role, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
                     
                     Intent intent;
                     if (role.equals("admin")) {
-                        // Nếu là admin, chuyển sang AdminActivity
                         intent = new Intent(LoginActivity.this, AdminActivity.class);
                     } else {
-                        // Nếu là user, chuyển sang MainActivity
                         intent = new Intent(LoginActivity.this, MainActivity.class);
                     }
                     
@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void applySavedTheme() {
+    private void applySavedThemeGlobal() {
         SharedPreferences settings = getSharedPreferences("AppSettings", MODE_PRIVATE);
         boolean isDarkMode = settings.getBoolean("dark_mode", false);
         if (isDarkMode) {

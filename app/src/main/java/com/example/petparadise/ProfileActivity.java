@@ -96,7 +96,7 @@ public class ProfileActivity extends AppCompatActivity {
             tvName.setText(dbHelper.getUserName(email));
             
             String avatarPath = dbHelper.getUserAvatar(email);
-            if (!avatarPath.isEmpty()) {
+            if (avatarPath != null && !avatarPath.isEmpty()) {
                 ivAvatar.setImageURI(Uri.parse(avatarPath));
                 ivAvatar.setImageTintList(null);
             }
