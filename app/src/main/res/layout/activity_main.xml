@@ -307,6 +307,7 @@
 
                 <!-- ITEM 1: Chó Poodle -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/item_dog_poodle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -372,6 +373,7 @@
 
                 <!-- ITEM 2: Chó Phốc Sóc -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/item_dog_phoc_soc"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -436,6 +438,7 @@
 
                 <!-- ITEM 3: Chó Golden -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/item_dog_golden"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"
@@ -500,6 +503,7 @@
 
                 <!-- ITEM 4: Mèo Anh lông ngắn -->
                 <androidx.cardview.widget.CardView
+                    android:id="@+id/item_cat_british"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_columnWeight="1"

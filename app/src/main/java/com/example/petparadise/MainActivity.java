@@ -8,10 +8,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private CardView btnDog, btnCat, btnFood, btnAccessory;
+    private CardView itemDogPoodle, itemDogPhocSoc, itemDogGolden, itemCatBritish;
+    private List<CardView> categoryButtons = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         
-        // Thiết lập sự kiện click cho các danh mục
+        initViews();
         setupCategoryButtons();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -29,19 +39,85 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void setupCategoryButtons() {
-        CardView btnDog = findViewById(R.id.btn_category_dog);
-        CardView btnCat = findViewById(R.id.btn_category_cat);
-        CardView btnFood = findViewById(R.id.btn_category_food);
-        CardView btnAccessory = findViewById(R.id.btn_category_accessory);
+    private void initViews() {
+        // Khởi tạo các nút danh mục
+        btnDog = findViewById(R.id.btn_category_dog);
+        btnCat = findViewById(R.id.btn_category_cat);
+        btnFood = findViewById(R.id.btn_category_food);
+        btnAccessory = findViewById(R.id.btn_category_accessory);
 
-        btnDog.setOnClickListener(v -> showToast("Bạn đã chọn danh mục: Chó"));
-        btnCat.setOnClickListener(v -> showToast("Bạn đã chọn danh mục: Mèo"));
-        btnFood.setOnClickListener(v -> showToast("Bạn đã chọn danh mục: Thức ăn"));
-        btnAccessory.setOnClickListener(v -> showToast("Bạn đã chọn danh mục: Phụ kiện"));
+        categoryButtons.add(btnDog);
+        categoryButtons.add(btnCat);
+        categoryButtons.add(btnFood);
+        categoryButtons.add(btnAccessory);
+
+        // Khởi tạo các sản phẩm
+        itemDogPoodle = findViewById(R.id.item_dog_poodle);
+        itemDogPhocSoc = findViewById(R.id.item_dog_phoc_soc);
+        itemDogGolden = findViewById(R.id.item_dog_golden);
+        itemCatBritish = findViewById(R.id.item_cat_british);
+    }
+
+    private void setupCategoryButtons() {
+        btnDog.setOnClickListener(v -> {
+            updateCategoryUI(btnDog);
+            filterProducts("dog");
+        });
+
+        btnCat.setOnClickListener(v -> {
+            updateCategoryUI(btnCat);
+            filterProducts("cat");
+        });
+
+        btnFood.setOnClickListener(v -> {
+            updateCategoryUI(btnFood);
+            filterProducts("food");
+        });
+
+        btnAccessory.setOnClickListener(v -> {
+            updateCategoryUI(btnAccessory);
+            filterProducts("accessory");
+        });
+    }
+
+    private void updateCategoryUI(CardView selectedBtn) {
+        for (CardView btn : categoryButtons) {
+            TextView text = (TextView) btn.getChildAt(0);
+            if (btn == selectedBtn) {
+                btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.brown_main));
+                text.setTextColor(ContextCompat.getColor(this, R.color.white));
+            } else {
+                btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.bg_chip_unselected));
+                text.setTextColor(ContextCompat.getColor(this, R.color.text_title));
+            }
+        }
+    }
+
+    private void filterProducts(String category) {
+        // Mặc định ẩn tất cả (nếu có food/accessory) hoặc xử lý theo yêu cầu
+        itemDogPoodle.setVisibility(View.GONE);
+        itemDogPhocSoc.setVisibility(View.GONE);
+        itemDogGolden.setVisibility(View.GONE);
+        itemCatBritish.setVisibility(View.GONE);
+
+        switch (category) {
+            case "dog":
+                itemDogPoodle.setVisibility(View.VISIBLE);
+                itemDogPhocSoc.setVisibility(View.VISIBLE);
+                itemDogGolden.setVisibility(View.VISIBLE);
+                break;
+            case "cat":
+                itemCatBritish.setVisibility(View.VISIBLE);
+                break;
+            case "food":
+            case "accessory":
+                Toast.makeText(this, "Danh mục này chưa có sản phẩm", Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 
     private void showToast(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }
+
