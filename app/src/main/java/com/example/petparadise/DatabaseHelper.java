@@ -9,17 +9,28 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "PetParadise.db";
-    private static final int DATABASE_VERSION = 3; // Nâng cấp version
+    private static final int DATABASE_VERSION = 4; // Nâng cấp version cho bảng products
 
+    // Bảng Users
     public static final String TABLE_USERS = "users";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_FULL_NAME = "full_name";
     public static final String COLUMN_EMAIL_PHONE = "email_phone";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_ROLE = "role";
-    public static final String COLUMN_AVATAR = "avatar"; // Cột lưu ảnh
+    public static final String COLUMN_AVATAR = "avatar";
 
-    private static final String TABLE_CREATE =
+    // Bảng Products
+    public static final String TABLE_PRODUCTS = "products";
+    public static final String COLUMN_PROD_ID = "id";
+    public static final String COLUMN_PROD_NAME = "name";
+    public static final String COLUMN_PROD_CATEGORY = "category";
+    public static final String COLUMN_PROD_PRICE = "price";
+    public static final String COLUMN_PROD_IMAGE = "image";
+    public static final String COLUMN_PROD_DESC = "description";
+    public static final String COLUMN_PROD_QUANTITY = "quantity";
+
+    private static final String USERS_CREATE =
             "CREATE TABLE " + TABLE_USERS + " (" +
                     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_FULL_NAME + " TEXT, " +
@@ -29,13 +40,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_AVATAR + " TEXT" +
                     ");";
 
+    private static final String PRODUCTS_CREATE =
+            "CREATE TABLE " + TABLE_PRODUCTS + " (" +
+                    COLUMN_PROD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_PROD_NAME + " TEXT, " +
+                    COLUMN_PROD_CATEGORY + " TEXT, " +
+                    COLUMN_PROD_PRICE + " TEXT, " +
+                    COLUMN_PROD_IMAGE + " TEXT, " +
+                    COLUMN_PROD_DESC + " TEXT, " +
+                    COLUMN_PROD_QUANTITY + " INTEGER" +
+                    ");";
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(TABLE_CREATE);
+        db.execSQL(USERS_CREATE);
+        db.execSQL(PRODUCTS_CREATE);
         addAdmin(db, "Admin PetParadise", "admin@pet.com", "admin123");
     }
 
@@ -43,6 +66,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         if (oldVersion < 3) {
             db.execSQL("ALTER TABLE " + TABLE_USERS + " ADD COLUMN " + COLUMN_AVATAR + " TEXT");
+        }
+        if (oldVersion < 4) {
+            db.execSQL(PRODUCTS_CREATE);
         }
     }
 
@@ -55,6 +81,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_USERS, null, values);
     }
 
+    // --- USER METHODS ---
     public boolean addUser(String fullName, String emailPhone, String password) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -95,7 +122,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.update(TABLE_USERS, values, COLUMN_EMAIL_PHONE + "=?", new String[]{email}) > 0;
     }
 
-    // Cập nhật ảnh đại diện
     public boolean updateUserAvatar(String email, String avatarPath) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -103,7 +129,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return db.update(TABLE_USERS, values, COLUMN_EMAIL_PHONE + "=?", new String[]{email}) > 0;
     }
 
-    // Lấy ảnh đại diện
     public String getUserAvatar(String email) {
         SQLiteDatabase db = this.getReadableDatabase();
         String avatar = "";
@@ -113,5 +138,28 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
         }
         return avatar;
+    }
+
+    // --- PRODUCT METHODS ---
+    public long addProduct(String name, String category, String price, String image, String desc, int quantity) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(COLUMN_PROD_NAME, name);
+        values.put(COLUMN_PROD_CATEGORY, category);
+        values.put(COLUMN_PROD_PRICE, price);
+        values.put(COLUMN_PROD_IMAGE, image);
+        values.put(COLUMN_PROD_DESC, desc);
+        values.put(COLUMN_PROD_QUANTITY, quantity);
+        return db.insert(TABLE_PRODUCTS, null, values);
+    }
+
+    public Cursor getAllProducts() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_PRODUCTS, null);
+    }
+
+    public boolean deleteProduct(int id) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        return db.delete(TABLE_PRODUCTS, COLUMN_PROD_ID + "=?", new String[]{String.valueOf(id)}) > 0;
     }
 }
