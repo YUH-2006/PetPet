@@ -57,6 +57,16 @@ public class ProfileActivity extends AppCompatActivity {
             applyTheme(newMode);
         });
 
+        // Lịch sử mua hàng
+        findViewById(R.id.menu_order_history).setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, OrderHistoryActivity.class));
+        });
+
+        // Lịch sử mua hàng
+        findViewById(R.id.menu_order_history).setOnClickListener(v -> {
+            startActivity(new Intent(ProfileActivity.this, OrderHistoryActivity.class));
+        });
+
         // Xử lý Đăng xuất
         btnLogout.setOnClickListener(v -> {
             getSharedPreferences("UserPrefs", MODE_PRIVATE).edit().clear().apply();

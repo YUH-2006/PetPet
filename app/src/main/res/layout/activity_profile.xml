@@ -125,11 +125,15 @@
                     android:textColor="@color/text_title" />
 
                 <TextView
+                    android:id="@+id/menu_order_history"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:gravity="center_vertical"
                     android:text="Lịch sử mua hàng"
-                    android:textColor="@color/text_title" />
+                    android:textColor="@color/text_title"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackground" />
 
                 <RelativeLayout
                     android:id="@+id/menu_app_settings"

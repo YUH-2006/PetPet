@@ -1,5 +1,6 @@
 package com.example.petparadise;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ImageView;
@@ -12,23 +13,31 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private ImageView imgPet, btnBack, btnFavorite;
     private TextView tvPetName, tvPetPrice, tvPetDescription;
+    private DatabaseHelper dbHelper;
+    private int currentProductId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
+        dbHelper = new DatabaseHelper(this);
         initViews();
         handleIntentData();
 
         btnBack.setOnClickListener(v -> finish());
         
-        btnFavorite.setOnClickListener(v -> {
-            Toast.makeText(this, "Đã thêm vào danh sách yêu thích", Toast.LENGTH_SHORT).show();
-        });
-
         findViewById(R.id.btnAddToCart).setOnClickListener(v -> {
-            Toast.makeText(this, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+            SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
+            String email = prefs.getString("user_email", "");
+            
+            if (currentProductId != -1 && !email.isEmpty()) {
+                if (dbHelper.addToCart(email, currentProductId, 1)) {
+                    Toast.makeText(this, "Đã thêm vào giỏ hàng thành công!", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Vui lòng đăng nhập để mua hàng", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -44,6 +53,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private void handleIntentData() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
+            currentProductId = extras.getInt("prod_id", -1);
             String name = extras.getString("pet_name", "Thú cưng");
             String price = extras.getString("pet_price", "Liên hệ");
             String imagePath = extras.getString("pet_image_path", "");
@@ -58,12 +68,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                 } else {
                     int resId = getResources().getIdentifier(imagePath, "drawable", getPackageName());
                     if (resId != 0) imgPet.setImageResource(resId);
-                    else imgPet.setImageResource(R.drawable.ic_launcher_background);
                 }
-            } else {
-                imgPet.setImageResource(R.drawable.ic_launcher_background);
             }
-
             if (description != null && !description.isEmpty()) {
                 tvPetDescription.setText(description);
             }

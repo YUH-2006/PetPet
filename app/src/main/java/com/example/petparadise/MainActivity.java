@@ -5,10 +5,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private List<Product> displayList = new ArrayList<>();
     private List<CardView> categoryButtons = new ArrayList<>();
     private DatabaseHelper dbHelper;
+    private String selectedCategory = "Tất cả";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +44,19 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupCategoryButtons();
         setupSearchBar();
+        
+        // Cài đặt adapter một lần duy nhất
+        adapter = new ProductAdapter(displayList, product -> {
+            Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
+            intent.putExtra("prod_id", product.getId());
+            intent.putExtra("pet_name", product.getName());
+            intent.putExtra("pet_price", product.getPrice());
+            intent.putExtra("pet_image_path", product.getImage());
+            intent.putExtra("pet_description", product.getDescription());
+            startActivity(intent);
+        });
+        rvProducts.setAdapter(adapter);
+
         loadProductsFromDB();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -60,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         btnFood = findViewById(R.id.btn_category_food);
         btnAccessory = findViewById(R.id.btn_category_accessory);
 
+        categoryButtons.clear();
         categoryButtons.add(btnAll);
         categoryButtons.add(btnDog);
         categoryButtons.add(btnCat);
@@ -68,12 +82,35 @@ public class MainActivity extends AppCompatActivity {
 
         rvProducts = findViewById(R.id.rv_main_products);
         rvProducts.setLayoutManager(new GridLayoutManager(this, 2));
+        rvProducts.setNestedScrollingEnabled(false); // Cần thiết khi dùng wrap_content trong NestedScrollView
 
         etSearch = findViewById(R.id.et_search);
 
+        findViewById(R.id.tv_view_all).setOnClickListener(v -> {
+            selectedCategory = "Tất cả";
+            updateCategoryUI(btnAll);
+            etSearch.setText("");
+            applyFilter();
+        });
+
+        // Banner
+        ImageView ivBanner = findViewById(R.id.iv_banner_image);
+        int doraId = getResources().getIdentifier("doraemon", "drawable", getPackageName());
+        if (doraId != 0) ivBanner.setImageResource(doraId);
+        else ivBanner.setImageResource(R.drawable.img_golden);
+        ivBanner.setImageTintList(null);
+
+        // Navigation
         findViewById(R.id.nav_profile).setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, ProfileActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(MainActivity.this, ProfileActivity.class));
+        });
+
+        findViewById(R.id.nav_cart).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, CartActivity.class));
+        });
+
+        findViewById(R.id.nav_booking).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, BookingActivity.class));
         });
     }
 
@@ -89,31 +126,20 @@ public class MainActivity extends AppCompatActivity {
             } while (cursor.moveToNext());
         }
         cursor.close();
-        
-        displayList.clear();
-        displayList.addAll(allProducts);
-        
-        adapter = new ProductAdapter(displayList, product -> {
-            Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
-            intent.putExtra("pet_name", product.getName());
-            intent.putExtra("pet_price", product.getPrice());
-            intent.putExtra("pet_image_path", product.getImage()); // Gửi đường dẫn ảnh thật
-            intent.putExtra("pet_description", product.getDescription());
-            startActivity(intent);
-        });
-        rvProducts.setAdapter(adapter);
+        applyFilter();
     }
 
     private void setupCategoryButtons() {
-        btnAll.setOnClickListener(v -> { updateCategoryUI(btnAll); filterProducts("Tất cả"); });
-        btnDog.setOnClickListener(v -> { updateCategoryUI(btnDog); filterProducts("Chó"); });
-        btnCat.setOnClickListener(v -> { updateCategoryUI(btnCat); filterProducts("Mèo"); });
-        btnFood.setOnClickListener(v -> { updateCategoryUI(btnFood); filterProducts("Thức ăn"); });
-        btnAccessory.setOnClickListener(v -> { updateCategoryUI(btnAccessory); filterProducts("Phụ kiện"); });
+        btnAll.setOnClickListener(v -> { selectedCategory = "Tất cả"; updateCategoryUI(btnAll); applyFilter(); });
+        btnDog.setOnClickListener(v -> { selectedCategory = "Chó"; updateCategoryUI(btnDog); applyFilter(); });
+        btnCat.setOnClickListener(v -> { selectedCategory = "Mèo"; updateCategoryUI(btnCat); applyFilter(); });
+        btnFood.setOnClickListener(v -> { selectedCategory = "Thức ăn"; updateCategoryUI(btnFood); applyFilter(); });
+        btnAccessory.setOnClickListener(v -> { selectedCategory = "Phụ kiện"; updateCategoryUI(btnAccessory); applyFilter(); });
     }
 
     private void updateCategoryUI(CardView selectedBtn) {
         for (CardView btn : categoryButtons) {
+            if (btn == null) continue;
             TextView text = (TextView) btn.getChildAt(0);
             if (btn == selectedBtn) {
                 btn.setCardBackgroundColor(ContextCompat.getColor(this, R.color.brown_main));
@@ -125,13 +151,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void filterProducts(String category) {
+    private void applyFilter() {
+        String query = etSearch.getText().toString().toLowerCase().trim();
         displayList.clear();
-        if (category.equals("Tất cả")) {
-            displayList.addAll(allProducts);
-        } else {
-            for (Product p : allProducts) {
-                if (p.getCategory().equals(category)) displayList.add(p);
+        
+        for (Product p : allProducts) {
+            boolean matchesCategory = selectedCategory.equals("Tất cả") || p.getCategory().equalsIgnoreCase(selectedCategory);
+            boolean matchesSearch = query.isEmpty() || p.getName().toLowerCase().contains(query);
+            
+            if (matchesCategory && matchesSearch) {
+                displayList.add(p);
             }
         }
         adapter.notifyDataSetChanged();
@@ -143,12 +172,7 @@ public class MainActivity extends AppCompatActivity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String key = s.toString().toLowerCase().trim();
-                displayList.clear();
-                for (Product p : allProducts) {
-                    if (p.getName().toLowerCase().contains(key)) displayList.add(p);
-                }
-                adapter.notifyDataSetChanged();
+                applyFilter();
             }
             @Override
             public void afterTextChanged(Editable s) {}
@@ -158,6 +182,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        loadProductsFromDB(); // Cập nhật lại danh sách nếu có thêm/xóa ở màn hình Admin
+        loadProductsFromDB();
     }
 }

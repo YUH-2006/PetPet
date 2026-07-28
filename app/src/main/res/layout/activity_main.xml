@@ -7,7 +7,7 @@
     android:background="@color/bg_main">
 
     <!-- KHU VỰC CUỘN NỘI DUNG CHÍNH -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottom_nav"
@@ -167,8 +167,9 @@
 
                     <!-- Hình ảnh minh họa Spa/Pet bên phải -->
                     <ImageView
-                        android:layout_width="95dp"
-                        android:layout_height="95dp"
+                        android:id="@+id/iv_banner_image"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:scaleType="centerCrop"
@@ -311,9 +312,12 @@
                     android:textStyle="bold" />
 
                 <TextView
+                    android:id="@+id/tv_view_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:text="Xem tất cả"
                     android:textColor="@color/brown_main"
                     android:textSize="13sp"
@@ -328,7 +332,7 @@
                 android:nestedScrollingEnabled="false" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <!-- 7. BOTTOM NAVIGATION BAR -->
     <LinearLayout

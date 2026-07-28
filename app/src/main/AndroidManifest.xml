@@ -52,6 +52,42 @@
             android:exported="false" />
 
         <activity
+            android:name=".CartActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".BookingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".OrderHistoryActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminBookingActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminReportsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminNotificationsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminSettingsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdminOrdersActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
