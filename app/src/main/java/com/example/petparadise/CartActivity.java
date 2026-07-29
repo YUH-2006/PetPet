@@ -128,6 +128,6 @@ public class CartActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         }
 
-        tvTotalPrice.setText(String.format("%,.0f VND", total));
+        tvTotalPrice.setText(String.format("%,.0f", total).replace(',', '.') + " VND");
     }
 }

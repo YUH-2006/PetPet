@@ -44,7 +44,19 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = productList.get(position);
         holder.tvName.setText(product.getName());
-        holder.tvPrice.setText(product.getPrice() + " VND");
+        
+        // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
+        String formattedPrice = product.getPrice();
+        try {
+            // Loại bỏ các ký tự không phải số trước khi định dạng
+            String cleanPrice = product.getPrice().replaceAll("[^\\d]", "");
+            if (!cleanPrice.isEmpty()) {
+                double priceValue = Double.parseDouble(cleanPrice);
+                formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
+            }
+        } catch (Exception ignored) {}
+        
+        holder.tvPrice.setText(formattedPrice + " VND");
         
         if (holder.tvCategory != null) holder.tvCategory.setText(product.getCategory());
         if (holder.tvQty != null) holder.tvQty.setText("Số lượng: " + product.getQuantity());

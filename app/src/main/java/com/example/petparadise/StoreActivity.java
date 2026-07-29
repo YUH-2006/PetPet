@@ -3,6 +3,8 @@ package com.example.petparadise;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,9 +19,14 @@ import java.util.List;
 public class StoreActivity extends AppCompatActivity {
 
     private RecyclerView rvInventory;
-    private List<Product> productList = new ArrayList<>();
+    private List<Product> allProducts = new ArrayList<>();
+    private List<Product> pagedProducts = new ArrayList<>();
     private DatabaseHelper dbHelper;
-    private TextView tvTotal, tvLowStock;
+    private TextView tvTotal, tvLowStock, tvPageNumber;
+    private ImageView btnPrev, btnNext;
+    
+    private int currentPage = 1;
+    private static final int ITEMS_PER_PAGE = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,12 +34,23 @@ public class StoreActivity extends AppCompatActivity {
         setContentView(R.layout.activity_store);
 
         dbHelper = new DatabaseHelper(this);
+        initViews();
+        setupListeners();
+        loadProducts();
+    }
+
+    private void initViews() {
         rvInventory = findViewById(R.id.rv_inventory);
         tvTotal = findViewById(R.id.tv_total_products);
         tvLowStock = findViewById(R.id.tv_low_stock);
+        tvPageNumber = findViewById(R.id.tv_page_number);
+        btnPrev = findViewById(R.id.btn_prev_page);
+        btnNext = findViewById(R.id.btn_next_page);
 
         rvInventory.setLayoutManager(new LinearLayoutManager(this));
+    }
 
+    private void setupListeners() {
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
         
         findViewById(R.id.btn_add_product).setOnClickListener(v -> {
@@ -40,7 +58,19 @@ public class StoreActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        loadProducts();
+        btnPrev.setOnClickListener(v -> {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagedList();
+            }
+        });
+
+        btnNext.setOnClickListener(v -> {
+            if (currentPage < getTotalPages()) {
+                currentPage++;
+                updatePagedList();
+            }
+        });
     }
 
     @Override
@@ -50,7 +80,7 @@ public class StoreActivity extends AppCompatActivity {
     }
 
     private void loadProducts() {
-        productList.clear();
+        allProducts.clear();
         Cursor cursor = dbHelper.getAllProducts();
         int lowStockCount = 0;
 
@@ -65,17 +95,46 @@ public class StoreActivity extends AppCompatActivity {
                     cursor.getString(5),
                     cursor.getInt(6)
                 );
-                productList.add(product);
+                allProducts.add(product);
                 if (product.getQuantity() <= 5) lowStockCount++;
             } while (cursor.moveToNext());
         }
         cursor.close();
 
-        ProductAdapter adapter = new ProductAdapter(productList, this::showOptionsDialog);
+        tvTotal.setText(String.valueOf(allProducts.size()));
+        tvLowStock.setText(String.valueOf(lowStockCount));
+        
+        // Reset to page 1 after reloading data
+        currentPage = 1;
+        updatePagedList();
+    }
+
+    private void updatePagedList() {
+        pagedProducts.clear();
+        int totalItems = allProducts.size();
+        int totalPages = getTotalPages();
+        
+        if (totalItems > 0) {
+            int startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            int endIndex = Math.min(startIndex + ITEMS_PER_PAGE, totalItems);
+            
+            for (int i = startIndex; i < endIndex; i++) {
+                pagedProducts.add(allProducts.get(i));
+            }
+        }
+
+        ProductAdapter adapter = new ProductAdapter(pagedProducts, this::showOptionsDialog);
         rvInventory.setAdapter(adapter);
 
-        tvTotal.setText(String.valueOf(productList.size()));
-        tvLowStock.setText(String.valueOf(lowStockCount));
+        tvPageNumber.setText("Trang " + currentPage + " / " + Math.max(1, totalPages));
+        
+        // Cập nhật trạng thái nút
+        btnPrev.setAlpha(currentPage > 1 ? 1.0f : 0.3f);
+        btnNext.setAlpha(currentPage < totalPages ? 1.0f : 0.3f);
+    }
+
+    private int getTotalPages() {
+        return (int) Math.ceil((double) allProducts.size() / ITEMS_PER_PAGE);
     }
 
     private void showOptionsDialog(Product product) {
@@ -84,10 +143,8 @@ public class StoreActivity extends AppCompatActivity {
         builder.setTitle(product.getName());
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                // Chỉnh sửa sản phẩm
                 openEditProduct(product);
             } else if (which == 1) {
-                // Xóa sản phẩm
                 confirmDelete(product);
             }
         });

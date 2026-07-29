@@ -36,7 +36,17 @@ public class AdminOrderAdapter extends RecyclerView.Adapter<AdminOrderAdapter.Vi
         holder.tvId.setText("Đơn hàng #" + order.id);
         holder.tvUser.setText("Khách hàng: " + order.userEmail + " (" + order.paymentMethod + ")");
         holder.tvItems.setText(order.summary);
-        holder.tvTotal.setText("Tổng tiền: " + order.total);
+        // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
+        String formattedPrice = order.total;
+        try {
+            String cleanPrice = order.total.replaceAll("[^\\d]", "");
+            if (!cleanPrice.isEmpty()) {
+                double priceValue = Double.parseDouble(cleanPrice);
+                formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
+            }
+        } catch (Exception ignored) {}
+        
+        holder.tvTotal.setText("Tổng tiền: " + formattedPrice + " VND");
         holder.tvStatus.setText(order.status);
 
         // Hiển thị nút dựa trên trạng thái

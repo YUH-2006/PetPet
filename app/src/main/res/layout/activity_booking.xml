@@ -3,38 +3,293 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_main"
-    android:orientation="vertical"
-    android:padding="24dp">
+    android:background="#FCFBF9"
+    android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Đặt lịch Spa"
-        android:textColor="@color/brown_main"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="24dp" />
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tên thú cưng" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-    <EditText android:id="@+id/et_pet_name" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/edittext_bg" android:paddingHorizontal="16dp" android:layout_marginBottom="16dp"/>
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Dịch vụ" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-    <Spinner android:id="@+id/spinner_service" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/edittext_bg" android:layout_marginBottom="16dp"/>
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Ngày hẹn (DD/MM/YYYY)" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-    <EditText android:id="@+id/et_date" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/edittext_bg" android:paddingHorizontal="16dp" android:layout_marginBottom="16dp" android:hint="25/12/2023"/>
-
-    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giờ hẹn" android:textStyle="bold" android:layout_marginBottom="4dp"/>
-    <EditText android:id="@+id/et_time" android:layout_width="match_parent" android:layout_height="50dp" android:background="@drawable/edittext_bg" android:paddingHorizontal="16dp" android:layout_marginBottom="32dp" android:hint="14:00"/>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_submit_booking"
+    <!-- Header -->
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="55dp"
-        android:text="Xác nhận đặt lịch"
-        android:textColor="@color/white"
-        app:backgroundTint="@color/brown_main"
-        app:cornerRadius="12dp" />
+        android:layout_height="56dp"
+        android:paddingHorizontal="16dp">
+        <ImageView
+            android:id="@+id/btn_back"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_menu_revert"
+            app:tint="#8B5737" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_launcher_foreground"
+                app:tint="#8B5737" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="PetParadise"
+                android:textColor="#8B5737"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_menu_search"
+            app:tint="#8B5737" />
+    </RelativeLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đặt lịch dịch vụ"
+                android:textColor="#333333"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Chọn dịch vụ chăm sóc tốt nhất cho thú cưng của bạn"
+                android:textColor="#666666"
+                android:textSize="13sp" />
+
+            <!-- Dịch vụ Spa -->
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dịch vụ Spa"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15sp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="Xem tất cả"
+                    android:textColor="#8B5737"
+                    android:textSize="11sp" />
+            </RelativeLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_booking_services"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <!-- Chọn ngày -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="12dp"
+                android:text="Chọn ngày"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <!-- Simple custom date picker mock -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="12dp">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp">
+                        <ImageView
+                            android:id="@+id/btn_prev_date"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_media_previous"
+                            app:tint="#666666"
+                            android:clickable="true"
+                            android:focusable="true" />
+                        <TextView
+                            android:id="@+id/tv_selected_month_header"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true"
+                            android:text="THÁNG 10, 2023"
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:textSize="13sp"
+                            android:clickable="true"
+                            android:focusable="true"/>
+                        <ImageView
+                            android:id="@+id/btn_next_date"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_alignParentEnd="true"
+                            android:src="@android:drawable/ic_media_next"
+                            app:tint="#666666"
+                            android:clickable="true"
+                            android:focusable="true" />
+                    </RelativeLayout>
+                    <!-- Days week row -->
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:weightSum="7">
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T2" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T3" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T4" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T5" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T6" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="T7" android:textSize="10sp" android:textColor="#999999"/>
+                        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="CN" android:textSize="10sp" android:textColor="#999999"/>
+                    </LinearLayout>
+                    <!-- Date row dynamic -->
+                    <LinearLayout
+                        android:id="@+id/layout_date_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:weightSum="7">
+                        <!-- Dynamic dates go here -->
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Giờ cụ thể -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Giờ cụ thể"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="BUỔI SÁNG"
+                android:textColor="#666666"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <GridLayout
+                android:id="@+id/grid_morning"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="3">
+            </GridLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="BUỔI CHIỀU"
+                android:textColor="#666666"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <GridLayout
+                android:id="@+id/grid_afternoon"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:columnCount="3">
+            </GridLayout>
+
+            <EditText
+                android:id="@+id/et_pet_name"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/bg_input_payment"
+                android:hint="Nhập tên thú cưng của bạn"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <!-- Summary Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#FEF5EE">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center_horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng cộng ước tính"
+                        android:textColor="#666666"
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tv_booking_summary_detail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Dịch vụ: ..."
+                        android:textColor="#999999"
+                        android:textSize="11sp" />
+                    <TextView
+                        android:id="@+id/tv_booking_total_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="0đ"
+                        android:textColor="#8B5737"
+                        android:textSize="24sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_submit_booking"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:layout_marginTop="16dp"
+                        android:text="Xác nhận đặt lịch"
+                        android:textAllCaps="false"
+                        android:textColor="#FFFFFF"
+                        app:backgroundTint="#8B5737"
+                        app:cornerRadius="25dp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
 </LinearLayout>

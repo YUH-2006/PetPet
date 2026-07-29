@@ -39,7 +39,18 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Product product = cartList.get(position);
         holder.tvName.setText(product.getName());
-        holder.tvPrice.setText(product.getPrice() + " VND");
+        
+        // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
+        String formattedPrice = product.getPrice();
+        try {
+            String cleanPrice = product.getPrice().replaceAll("[^\\d]", "");
+            if (!cleanPrice.isEmpty()) {
+                double priceValue = Double.parseDouble(cleanPrice);
+                formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
+            }
+        } catch (Exception ignored) {}
+        
+        holder.tvPrice.setText(formattedPrice + " VND");
         holder.tvQty.setText(String.valueOf(product.getQuantity()));
 
         if (product.getImage() != null && !product.getImage().isEmpty()) {

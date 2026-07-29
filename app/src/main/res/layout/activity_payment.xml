@@ -3,13 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F5F2"
+    android:background="#FCFBF9"
     android:orientation="vertical">
 
+    <!-- Header -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:padding="16dp">
+        android:layout_height="56dp"
+        android:paddingHorizontal="16dp">
         <ImageView
             android:id="@+id/btn_back"
             android:layout_width="24dp"
@@ -21,13 +22,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Phương thức thanh toán"
+            android:text="Thanh toán"
             android:textColor="#8B5737"
-            android:textSize="20sp"
+            android:textSize="18sp"
             android:textStyle="bold" />
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@android:drawable/ic_menu_help"
+            app:tint="#8B5737" />
     </RelativeLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -38,112 +46,374 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <!-- 1. ĐỊA CHỈ GIAO HÀNG -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    app:tint="#8B5737" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Địa chỉ giao hàng"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tóm tắt đơn hàng"
-                android:textColor="#333333"
-                android:textStyle="bold" />
+                android:text="Họ và tên"
+                android:textSize="12sp"
+                android:textColor="#666666" />
+            <EditText
+                android:id="@+id/et_pay_name"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_input_payment"
+                android:hint="Nguyễn Văn A"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp"
+                android:inputType="textPersonName" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Số điện thoại"
+                android:textSize="12sp"
+                android:textColor="#666666" />
+            <EditText
+                android:id="@+id/et_pay_phone"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/bg_input_payment"
+                android:hint="090 123 4567"
+                android:inputType="phone"
+                android:paddingHorizontal="16dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Địa chỉ chi tiết"
+                android:textSize="12sp"
+                android:textColor="#666666" />
+            <EditText
+                android:id="@+id/et_pay_address"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="24dp"
+                android:background="@drawable/bg_input_payment"
+                android:gravity="top"
+                android:hint="Số nhà, tên đường, phường/xã..."
+                android:minHeight="80dp"
+                android:padding="16dp"
+                android:textSize="14sp" />
+
+            <!-- 2. PHƯƠNG THỨC THANH TOÁN -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_agenda"
+                    app:tint="#8B5737" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Phương thức thanh toán"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15sp" />
+            </LinearLayout>
+
+            <RadioGroup
+                android:id="@+id/rg_payment_methods"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- COD -->
+                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="10dp">
+                    <RadioButton
+                        android:id="@+id/rb_cod"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_payment_item"
+                        android:button="@null"
+                        android:checked="true" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:orientation="horizontal"
+                        android:clickable="false">
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="#F5EBE6"
+                            android:padding="6dp"
+                            android:src="@android:drawable/ic_menu_agenda"
+                            app:tint="#8B5737" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="COD (Tiền mặt)"
+                                android:textColor="#333333"
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Thanh toán khi nhận hàng"
+                                android:textColor="#666666"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                        <CheckBox
+                            android:id="@+id/cb_cod_indicator"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:button="@drawable/ic_check_circle_custom"
+                            android:checked="true"
+                            android:clickable="false" />
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!-- BANK -->
+                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="10dp">
+                    <RadioButton
+                        android:id="@+id/rb_bank"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_payment_item"
+                        android:button="@null" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:orientation="horizontal"
+                        android:clickable="false">
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="#F5EBE6"
+                            android:padding="6dp"
+                            android:src="@android:drawable/ic_menu_camera"
+                            app:tint="#8B5737" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Chuyển khoản"
+                                android:textColor="#333333"
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Internet Banking / QR Code"
+                                android:textColor="#666666"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <!-- WALLET -->
+                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="24dp">
+                    <RadioButton
+                        android:id="@+id/rb_wallet"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/bg_payment_item"
+                        android:button="@null" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:orientation="horizontal"
+                        android:clickable="false">
+                        <ImageView
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="#F5EBE6"
+                            android:padding="6dp"
+                            android:src="@android:drawable/ic_menu_send"
+                            app:tint="#8B5737" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ví điện tử"
+                                android:textColor="#333333"
+                                android:textStyle="bold"
+                                android:textSize="14sp" />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Momo, ZaloPay, ShopeePay"
+                                android:textColor="#666666"
+                                android:textSize="11sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+            </RadioGroup>
+
+            <!-- 3. TÓM TẮT ĐƠN HÀNG -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@android:drawable/ic_menu_view"
+                    app:tint="#8B5737" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Tóm tắt đơn hàng"
+                    android:textColor="#333333"
+                    android:textStyle="bold"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp">
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/white">
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="16dp">
+
                     <TextView
                         android:id="@+id/tv_pay_summary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Sản phẩm: ..."
-                        android:textColor="#666666" />
+                        android:text="Danh sách sản phẩm..."
+                        android:textColor="#333333"
+                        android:textSize="14sp"
+                        android:lineSpacingExtra="4dp" />
+
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginVertical="12dp"
-                        android:background="#EEEEEE" />
+                        android:layout_marginVertical="16dp"
+                        android:background="#F0F0F0" />
+
                     <RelativeLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Tổng thanh toán"
-                            android:textColor="#333333" />
-                        <TextView
-                            android:id="@+id/tv_pay_total"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:text="0 VND"
-                            android:textColor="#A56236"
-                            android:textStyle="bold" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tạm tính" android:textColor="#666666" />
+                        <TextView android:id="@+id/tv_pay_subtotal" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0đ" android:textColor="#333333" />
                     </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Phí vận chuyển" android:textColor="#666666" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="30.000đ" android:textColor="#333333" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Giảm giá" android:textColor="#666666" />
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="-0đ" android:textColor="#E53935" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Tổng tiền" android:textColor="#333333" android:textStyle="bold" android:textSize="16sp" />
+                        <TextView android:id="@+id/tv_pay_total" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_alignParentEnd="true" android:text="0đ" android:textColor="#8B5737" android:textStyle="bold" android:textSize="18sp" />
+                    </RelativeLayout>
+
+                    <!-- MÃ GIẢM GIÁ -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="44dp"
+                        android:layout_marginTop="20dp"
+                        android:orientation="horizontal">
+                        <EditText
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/bg_input_payment"
+                            android:hint="Mã giảm giá"
+                            android:paddingHorizontal="12dp"
+                            android:textSize="13sp" />
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="8dp"
+                            android:backgroundTint="#E0D7D0"
+                            android:text="Áp dụng"
+                            android:textAllCaps="false"
+                            android:textColor="#333333"
+                            android:textSize="13sp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chọn phương thức thanh toán"
-                android:textColor="#333333"
-                android:textStyle="bold" />
-
-            <RadioGroup
-                android:id="@+id/rg_payment_methods"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-
-                <RadioButton
-                    android:id="@+id/rb_cod"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/bg_payment_item"
-                    android:button="@null"
-                    android:checked="true"
-                    android:drawableStart="@android:drawable/ic_menu_agenda"
-                    android:drawablePadding="16dp"
-                    android:paddingHorizontal="16dp"
-                    android:text="Thanh toán khi nhận hàng (COD)"
-                    android:textColor="#333333" />
-
-                <RadioButton
-                    android:id="@+id/rb_bank"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="8dp"
-                    android:background="@drawable/bg_payment_item"
-                    android:button="@null"
-                    android:drawableStart="@android:drawable/ic_menu_camera"
-                    android:drawablePadding="16dp"
-                    android:paddingHorizontal="16dp"
-                    android:text="Chuyển khoản ngân hàng"
-                    android:textColor="#333333" />
-
-                <RadioButton
-                    android:id="@+id/rb_wallet"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:background="@drawable/bg_payment_item"
-                    android:button="@null"
-                    android:drawableStart="@android:drawable/ic_menu_send"
-                    android:drawablePadding="16dp"
-                    android:paddingHorizontal="16dp"
-                    android:text="Ví điện tử (Momo/ZaloPay)"
-                    android:textColor="#333333" />
-
-            </RadioGroup>
+                android:layout_marginTop="24dp"
+                android:gravity="center"
+                android:text="Bằng cách nhấn đặt hàng, bạn đồng ý với Điều khoản dịch vụ"
+                android:textColor="#AAAAAA"
+                android:textSize="11sp" />
 
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -154,12 +424,13 @@
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_confirm_payment"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="Xác nhận thanh toán"
+            android:layout_height="55dp"
+            android:text="Xác nhận đặt hàng →"
             android:textAllCaps="false"
             android:textColor="#FFFFFF"
             app:backgroundTint="#8B5737"
-            app:cornerRadius="25dp" />
+            app:cornerRadius="12dp"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </LinearLayout>

@@ -6,13 +6,15 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
     private ImageView imgPet, btnBack, btnFavorite;
-    private TextView tvPetName, tvPetPrice, tvPetDescription;
+    private TextView tvPetName, tvPetPrice, tvPetDescription, tvTitle, tvDescHeader;
+    private View layoutPills, layoutHealth;
     private DatabaseHelper dbHelper;
     private int currentProductId = -1;
 
@@ -48,19 +50,48 @@ public class ProductDetailActivity extends AppCompatActivity {
         tvPetName = findViewById(R.id.tvPetName);
         tvPetPrice = findViewById(R.id.tvPetPrice);
         tvPetDescription = findViewById(R.id.tvPetDescription);
+        tvTitle = findViewById(R.id.tvHeaderTitle);
+        tvDescHeader = findViewById(R.id.tvDescriptionTitle);
+        layoutPills = findViewById(R.id.layoutPetPills);
+        layoutHealth = findViewById(R.id.layoutPetHealth);
     }
 
     private void handleIntentData() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             currentProductId = extras.getInt("prod_id", -1);
-            String name = extras.getString("pet_name", "Thú cưng");
+            String name = extras.getString("pet_name", "Sản phẩm");
+            String category = extras.getString("pet_category", "");
             String price = extras.getString("pet_price", "Liên hệ");
             String imagePath = extras.getString("pet_image_path", "");
             String description = extras.getString("pet_description", "");
 
             tvPetName.setText(name);
-            tvPetPrice.setText(price + " VND");
+            
+            // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
+            String formattedPrice = price;
+            try {
+                String cleanPrice = price.replaceAll("[^\\d]", "");
+                if (!cleanPrice.isEmpty()) {
+                    double priceValue = Double.parseDouble(cleanPrice);
+                    formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
+                }
+            } catch (Exception ignored) {}
+            tvPetPrice.setText(formattedPrice + " VND");
+
+            // Hiển thị/Ẩn thông tin thú cưng dựa trên danh mục
+            boolean isPet = category.equals("Chó") || category.equals("Mèo");
+            if (isPet) {
+                tvTitle.setText("Chi tiết thú cưng");
+                tvDescHeader.setText("Thông tin thú cưng");
+                layoutPills.setVisibility(View.VISIBLE);
+                layoutHealth.setVisibility(View.VISIBLE);
+            } else {
+                tvTitle.setText("Chi tiết sản phẩm");
+                tvDescHeader.setText("Mô tả sản phẩm");
+                layoutPills.setVisibility(View.GONE);
+                layoutHealth.setVisibility(View.GONE);
+            }
             
             if (imagePath != null && !imagePath.isEmpty()) {
                 if (imagePath.startsWith("/")) {

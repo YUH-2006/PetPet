@@ -19,7 +19,10 @@ public class AdminReportsActivity extends AppCompatActivity {
 
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
-        tvRevenue.setText(String.format("%,.0f VND", dbHelper.getTotalRevenue()));
+        double totalRevenue = dbHelper.getTotalRevenue();
+        String formattedRevenue = String.format("%,.0f", totalRevenue).replace(',', '.');
+        
+        tvRevenue.setText(formattedRevenue + " VND");
         tvOrders.setText(String.valueOf(dbHelper.getTotalOrdersCount()));
         tvUsers.setText(String.valueOf(dbHelper.getNewCustomersCount()));
     }

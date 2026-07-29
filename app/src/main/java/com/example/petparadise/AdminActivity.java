@@ -30,7 +30,8 @@ public class AdminActivity extends AppCompatActivity {
 
     private void loadDashboardData() {
         tvOrders.setText(String.valueOf(dbHelper.getTotalOrdersCount()));
-        tvRevenue.setText(String.format("%,.0f", dbHelper.getTotalRevenue()));
+        String formattedRevenue = String.format("%,.0f", dbHelper.getTotalRevenue()).replace(',', '.');
+        tvRevenue.setText(formattedRevenue);
         tvUsers.setText(String.valueOf(dbHelper.getNewCustomersCount()));
     }
 
@@ -49,7 +50,7 @@ public class AdminActivity extends AppCompatActivity {
         });
 
         findViewById(R.id.btn_manage_customers).setOnClickListener(v -> 
-            Toast.makeText(this, "Tính năng Quản lý Khách hàng đang phát triển", Toast.LENGTH_SHORT).show()
+            startActivity(new Intent(AdminActivity.this, AdminCustomersActivity.class))
         );
 
         // Bottom Navigation

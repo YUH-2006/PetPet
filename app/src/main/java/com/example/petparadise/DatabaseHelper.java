@@ -9,7 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "PetParadise.db";
-    private static final int DATABASE_VERSION = 13; // Tăng lên 13 để thêm cột payment_method
+    private static final int DATABASE_VERSION = 14; // Tăng lên 14 để thêm bảng messages
 
     // Các tên bảng
     public static final String TABLE_USERS = "users";
@@ -17,6 +17,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_CART = "cart";
     public static final String TABLE_ORDERS = "orders";
     public static final String TABLE_BOOKINGS = "bookings";
+    public static final String TABLE_MESSAGES = "messages";
 
     // Cột bảng Products
     public static final String COLUMN_PROD_ID = "id";
@@ -53,6 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + TABLE_CART + " (" + COLUMN_CART_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, product_id INTEGER, quantity INTEGER)");
         db.execSQL("CREATE TABLE " + TABLE_ORDERS + " (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, total_price TEXT, date TEXT, items_summary TEXT, status TEXT, payment_method TEXT)");
         db.execSQL("CREATE TABLE " + TABLE_BOOKINGS + " (id INTEGER PRIMARY KEY AUTOINCREMENT, user_email TEXT, pet_name TEXT, service_type TEXT, date TEXT, time TEXT, status TEXT)");
+        db.execSQL("CREATE TABLE " + TABLE_MESSAGES + " (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_email TEXT, receiver_email TEXT, message TEXT, timestamp INTEGER)");
         
         addAdmin(db, "Admin PetParadise", "admin@pet.com", "admin123");
         addDefaultProducts(db);
@@ -74,6 +76,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             try {
                 db.execSQL("ALTER TABLE " + TABLE_ORDERS + " ADD COLUMN payment_method TEXT DEFAULT 'COD'");
             } catch (Exception ignored) {}
+        }
+        if (oldVersion < 14) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_MESSAGES + " (id INTEGER PRIMARY KEY AUTOINCREMENT, sender_email TEXT, receiver_email TEXT, message TEXT, timestamp INTEGER)");
         }
     }
 
@@ -272,9 +277,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
+    public Cursor getAllUsers() {
+        return getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_USERS + " WHERE role='user' ORDER BY id DESC", null);
+    }
+
     public Cursor getRecentActivity() {
         // Lấy 5 đơn hàng mới nhất và 5 lịch hẹn mới nhất (giả định gộp hoặc lấy xen kẽ)
         return getReadableDatabase().rawQuery("SELECT 'order' as type, user_email, total_price as detail, date FROM " + TABLE_ORDERS + " UNION ALL " +
                 "SELECT 'booking' as type, user_email, service_type as detail, date FROM " + TABLE_BOOKINGS + " ORDER BY date DESC LIMIT 10", null);
+    }
+
+    // --- CHAT ---
+    public boolean sendMessage(String sender, String receiver, String msg) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues v = new ContentValues();
+        v.put("sender_email", sender);
+        v.put("receiver_email", receiver);
+        v.put("message", msg);
+        v.put("timestamp", System.currentTimeMillis());
+        return db.insert(TABLE_MESSAGES, null, v) != -1;
+    }
+
+    public Cursor getChatMessages(String user1, String user2) {
+        return getReadableDatabase().rawQuery("SELECT * FROM " + TABLE_MESSAGES + 
+                " WHERE (sender_email=? AND receiver_email=?) OR (sender_email=? AND receiver_email=?) ORDER BY timestamp ASC", 
+                new String[]{user1, user2, user2, user1});
+    }
+
+    public Cursor getChatList(String adminEmail) {
+        // Lấy danh sách những người đã từng nhắn tin cho admin hoặc ngược lại
+        return getReadableDatabase().rawQuery("SELECT DISTINCT CASE WHEN sender_email=? THEN receiver_email ELSE sender_email END AS contact FROM " + TABLE_MESSAGES + 
+                " WHERE sender_email=? OR receiver_email=?", new String[]{adminEmail, adminEmail, adminEmail});
     }
 }

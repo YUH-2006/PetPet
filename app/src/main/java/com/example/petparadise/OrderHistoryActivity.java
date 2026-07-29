@@ -82,7 +82,18 @@ public class OrderHistoryActivity extends AppCompatActivity {
             Order o = list.get(pos);
             h.id.setText("Đơn hàng #" + o.id);
             h.items.setText(o.summary);
-            h.total.setText("Tổng: " + o.total);
+            
+            // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
+            String formattedPrice = o.total;
+            try {
+                String cleanPrice = o.total.replaceAll("[^\\d]", "");
+                if (!cleanPrice.isEmpty()) {
+                    double priceValue = Double.parseDouble(cleanPrice);
+                    formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
+                }
+            } catch (Exception ignored) {}
+            
+            h.total.setText("Tổng: " + formattedPrice + " VND");
             h.status.setText("Trạng thái: " + o.status);
             
             try {

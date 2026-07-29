@@ -50,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ProductDetailActivity.class);
             intent.putExtra("prod_id", product.getId());
             intent.putExtra("pet_name", product.getName());
+            intent.putExtra("pet_category", product.getCategory());
             intent.putExtra("pet_price", product.getPrice());
             intent.putExtra("pet_image_path", product.getImage());
             intent.putExtra("pet_description", product.getDescription());
@@ -111,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
 
         findViewById(R.id.nav_booking).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, BookingActivity.class));
+        });
+
+        findViewById(R.id.nav_chat).setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, ChatActivity.class));
         });
     }
 
