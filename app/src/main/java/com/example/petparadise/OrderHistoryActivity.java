@@ -32,6 +32,12 @@ public class OrderHistoryActivity extends AppCompatActivity {
         rvOrders = findViewById(R.id.rv_order_history);
         rvOrders.setLayoutManager(new LinearLayoutManager(this));
 
+        // Cập nhật tiêu đề nếu đi từ menu Theo dõi
+        TextView tvTitle = findViewById(R.id.tv_order_history_title);
+        if (tvTitle != null && getIntent().hasExtra("tracking_mode")) {
+            tvTitle.setText("Theo dõi đơn hàng");
+        }
+
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         currentEmail = prefs.getString("user_email", "");
 
@@ -95,6 +101,17 @@ public class OrderHistoryActivity extends AppCompatActivity {
             
             h.total.setText("Tổng: " + formattedPrice + " VND");
             h.status.setText("Trạng thái: " + o.status);
+
+            // Đổi màu trạng thái để dễ theo dõi
+            if (o.status.equals("Đang xử lý") || o.status.equals("Chờ xử lý")) {
+                h.status.setTextColor(0xFFFF9800); // Cam
+            } else if (o.status.equals("Đang giao")) {
+                h.status.setTextColor(0xFF2196F3); // Xanh dương
+            } else if (o.status.equals("Đã hoàn thành")) {
+                h.status.setTextColor(0xFF4CAF50); // Xanh lá
+            } else if (o.status.equals("Đã hủy")) {
+                h.status.setTextColor(0xFFF44336); // Đỏ
+            }
             
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());

@@ -38,7 +38,8 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:scrollbars="none">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -145,154 +146,162 @@
                     android:textSize="15sp" />
             </LinearLayout>
 
-            <RadioGroup
-                android:id="@+id/rg_payment_methods"
+            <LinearLayout
+                android:id="@+id/layout_pay_methods"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <!-- COD -->
-                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="10dp">
-                    <RadioButton
-                        android:id="@+id/rb_cod"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_payment_item"
-                        android:button="@null"
-                        android:checked="true" />
+                <RelativeLayout
+                    android:id="@+id/layout_cod"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_payment_item"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/img_icon_cod"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerVertical="true"
+                        android:background="#F5EBE6"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_agenda"
+                        app:tint="#8B5737" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:orientation="horizontal"
-                        android:clickable="false">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="#F5EBE6"
-                            android:padding="6dp"
-                            android:src="@android:drawable/ic_menu_agenda"
-                            app:tint="#8B5737" />
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/img_icon_cod"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="COD (Tiền mặt)"
-                                android:textColor="#333333"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Thanh toán khi nhận hàng"
-                                android:textColor="#666666"
-                                android:textSize="11sp" />
-                        </LinearLayout>
-                        <CheckBox
-                            android:id="@+id/cb_cod_indicator"
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:button="@drawable/ic_check_circle_custom"
-                            android:checked="true"
-                            android:clickable="false" />
+                            android:text="COD (Tiền mặt)"
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Thanh toán khi nhận hàng"
+                            android:textColor="#666666"
+                            android:textSize="11sp" />
                     </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iv_check_cod"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_check_circle_custom"
+                        android:visibility="visible" />
                 </RelativeLayout>
 
                 <!-- BANK -->
-                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="10dp">
-                    <RadioButton
-                        android:id="@+id/rb_bank"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_payment_item"
-                        android:button="@null" />
+                <RelativeLayout
+                    android:id="@+id/layout_bank"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="10dp"
+                    android:background="@drawable/bg_payment_item"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/img_icon_bank"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerVertical="true"
+                        android:background="#F5EBE6"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="#8B5737" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:orientation="horizontal"
-                        android:clickable="false">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="#F5EBE6"
-                            android:padding="6dp"
-                            android:src="@android:drawable/ic_menu_camera"
-                            app:tint="#8B5737" />
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/img_icon_bank"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Chuyển khoản"
-                                android:textColor="#333333"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Internet Banking / QR Code"
-                                android:textColor="#666666"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="Chuyển khoản"
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Internet Banking / QR Code"
+                            android:textColor="#666666"
+                            android:textSize="11sp" />
                     </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iv_check_bank"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_check_circle_custom"
+                        android:visibility="gone" />
                 </RelativeLayout>
 
                 <!-- WALLET -->
-                <RelativeLayout android:layout_width="match_parent" android:layout_height="70dp" android:layout_marginBottom="24dp">
-                    <RadioButton
-                        android:id="@+id/rb_wallet"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_payment_item"
-                        android:button="@null" />
+                <RelativeLayout
+                    android:id="@+id/layout_wallet"
+                    android:layout_width="match_parent"
+                    android:layout_height="70dp"
+                    android:layout_marginBottom="24dp"
+                    android:background="@drawable/bg_payment_item"
+                    android:paddingHorizontal="16dp"
+                    android:clickable="true"
+                    android:focusable="true">
+                    <ImageView
+                        android:id="@+id/img_icon_wallet"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_centerVertical="true"
+                        android:background="#F5EBE6"
+                        android:padding="6dp"
+                        android:src="@android:drawable/ic_menu_send"
+                        app:tint="#8B5737" />
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center_vertical"
-                        android:paddingHorizontal="16dp"
-                        android:orientation="horizontal"
-                        android:clickable="false">
-                        <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
-                            android:background="#F5EBE6"
-                            android:padding="6dp"
-                            android:src="@android:drawable/ic_menu_send"
-                            app:tint="#8B5737" />
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_toEndOf="@id/img_icon_wallet"
+                        android:layout_centerVertical="true"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="16dp"
-                            android:orientation="vertical">
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Ví điện tử"
-                                android:textColor="#333333"
-                                android:textStyle="bold"
-                                android:textSize="14sp" />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Momo, ZaloPay, ShopeePay"
-                                android:textColor="#666666"
-                                android:textSize="11sp" />
-                        </LinearLayout>
+                            android:text="Ví điện tử"
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Momo, ZaloPay, ShopeePay"
+                            android:textColor="#666666"
+                            android:textSize="11sp" />
                     </LinearLayout>
+                    <ImageView
+                        android:id="@+id/iv_check_wallet"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/ic_check_circle_custom"
+                        android:visibility="gone" />
                 </RelativeLayout>
-            </RadioGroup>
+            </LinearLayout>
 
             <!-- 3. TÓM TẮT ĐƠN HÀNG -->
             <LinearLayout

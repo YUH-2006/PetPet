@@ -62,9 +62,11 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(ProfileActivity.this, OrderHistoryActivity.class));
         });
 
-        // Lịch sử mua hàng
-        findViewById(R.id.menu_order_history).setOnClickListener(v -> {
-            startActivity(new Intent(ProfileActivity.this, OrderHistoryActivity.class));
+        // Theo dõi đơn hàng
+        findViewById(R.id.menu_order_tracking).setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, OrderHistoryActivity.class);
+            intent.putExtra("tracking_mode", true);
+            startActivity(intent);
         });
 
         // Xử lý Đăng xuất

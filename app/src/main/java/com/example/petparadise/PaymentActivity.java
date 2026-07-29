@@ -2,9 +2,9 @@ package com.example.petparadise;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,9 +13,11 @@ public class PaymentActivity extends AppCompatActivity {
 
     private TextView tvSummary, tvTotal, tvSubtotal;
     private EditText etName, etPhone, etAddress;
-    private RadioGroup rgPayment;
+    private View layoutCod, layoutBank, layoutWallet;
+    private ImageView ivCheckCod, ivCheckBank, ivCheckWallet;
     private DatabaseHelper dbHelper;
     private String total, summary, email;
+    private String selectedMethod = "COD (Tiền mặt)";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,17 +28,13 @@ public class PaymentActivity extends AppCompatActivity {
         initViews();
         handleIntentData();
         loadUserInfo();
+        setupPaymentMethods();
 
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
 
         findViewById(R.id.btn_confirm_payment).setOnClickListener(v -> {
             if (validateInput()) {
-                String paymentMethod = getSelectedPaymentMethod();
-                String fullAddress = etAddress.getText().toString() + " (SĐT: " + etPhone.getText().toString() + ")";
-                
-                // Cập nhật summary để bao gồm cả thông tin người nhận nếu cần, 
-                // hoặc đơn giản là lưu đơn hàng.
-                if (dbHelper.placeOrder(email, total, summary, paymentMethod)) {
+                if (dbHelper.placeOrder(email, total, summary, selectedMethod)) {
                     Toast.makeText(this, "Đặt hàng thành công!", Toast.LENGTH_LONG).show();
                     setResult(RESULT_OK);
                     finish();
@@ -54,7 +52,51 @@ public class PaymentActivity extends AppCompatActivity {
         etName = findViewById(R.id.et_pay_name);
         etPhone = findViewById(R.id.et_pay_phone);
         etAddress = findViewById(R.id.et_pay_address);
-        rgPayment = findViewById(R.id.rg_payment_methods);
+        
+        layoutCod = findViewById(R.id.layout_cod);
+        layoutBank = findViewById(R.id.layout_bank);
+        layoutWallet = findViewById(R.id.layout_wallet);
+        
+        ivCheckCod = findViewById(R.id.iv_check_cod);
+        ivCheckBank = findViewById(R.id.iv_check_bank);
+        ivCheckWallet = findViewById(R.id.iv_check_wallet);
+    }
+
+    private void setupPaymentMethods() {
+        layoutCod.setOnClickListener(v -> selectPaymentMethod("COD"));
+        layoutBank.setOnClickListener(v -> selectPaymentMethod("BANK"));
+        layoutWallet.setOnClickListener(v -> selectPaymentMethod("WALLET"));
+        
+        // Mặc định chọn COD
+        selectPaymentMethod("COD");
+    }
+
+    private void selectPaymentMethod(String method) {
+        // Reset all
+        layoutCod.setSelected(false);
+        layoutBank.setSelected(false);
+        layoutWallet.setSelected(false);
+        ivCheckCod.setVisibility(View.GONE);
+        ivCheckBank.setVisibility(View.GONE);
+        ivCheckWallet.setVisibility(View.GONE);
+
+        switch (method) {
+            case "COD":
+                layoutCod.setSelected(true);
+                ivCheckCod.setVisibility(View.VISIBLE);
+                selectedMethod = "COD (Tiền mặt)";
+                break;
+            case "BANK":
+                layoutBank.setSelected(true);
+                ivCheckBank.setVisibility(View.VISIBLE);
+                selectedMethod = "Chuyển khoản";
+                break;
+            case "WALLET":
+                layoutWallet.setSelected(true);
+                ivCheckWallet.setVisibility(View.VISIBLE);
+                selectedMethod = "Ví điện tử";
+                break;
+        }
     }
 
     private void handleIntentData() {
@@ -63,18 +105,8 @@ public class PaymentActivity extends AppCompatActivity {
             total = extras.getString("total_price", "0 VND");
             summary = extras.getString("summary", "");
             
-            // Định dạng giá tiền có dấu chấm phân cách hàng nghìn
-            String formattedPrice = total;
-            try {
-                String cleanPrice = total.replaceAll("[^\\d]", "");
-                if (!cleanPrice.isEmpty()) {
-                    double priceValue = Double.parseDouble(cleanPrice);
-                    formattedPrice = String.format("%,.0f", priceValue).replace(',', '.');
-                }
-            } catch (Exception ignored) {}
-            
-            tvTotal.setText(formattedPrice + " VND");
-            tvSubtotal.setText(formattedPrice + " VND"); // Tạm tính bằng tổng (chưa trừ ship/mã)
+            tvTotal.setText(total);
+            tvSubtotal.setText(total);
             tvSummary.setText(summary);
         }
     }
@@ -83,7 +115,6 @@ public class PaymentActivity extends AppCompatActivity {
         SharedPreferences prefs = getSharedPreferences("UserPrefs", MODE_PRIVATE);
         email = prefs.getString("user_email", "");
         etName.setText(dbHelper.getUserName(email));
-        // Số điện thoại nếu có trong DB thì lấy, tạm thời để trống hoặc lấy email nếu là sđt
         if (email.matches("\\d+")) etPhone.setText(email);
     }
 
@@ -101,13 +132,5 @@ public class PaymentActivity extends AppCompatActivity {
             return false;
         }
         return true;
-    }
-
-    private String getSelectedPaymentMethod() {
-        int selectedId = rgPayment.getCheckedRadioButtonId();
-        if (selectedId == R.id.rb_cod) return "COD (Tiền mặt)";
-        if (selectedId == R.id.rb_bank) return "Chuyển khoản";
-        if (selectedId == R.id.rb_wallet) return "Ví điện tử";
-        return "COD";
     }
 }
